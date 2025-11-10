@@ -1,0 +1,279 @@
+﻿<Window x:Class="projet_fleet_manager.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Fleet Manager - Gestion de Flotte" 
+        Height="753" 
+        Width="1202"
+        WindowStartupLocation="CenterScreen"
+        WindowState="Maximized">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Barre supérieure -->
+        <Border Grid.Row="0" Background="#2C3E50" Height="60">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="20,0">
+                    <TextBlock Text="🚗" FontSize="28" Foreground="White" Margin="0,0,15,0"/>
+                    <TextBlock Text="Fleet Manager" 
+                              FontSize="22" 
+                              FontWeight="Bold" 
+                              Foreground="White" 
+                              VerticalAlignment="Center"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="20,0">
+                    <TextBlock x:Name="txtWelcome" 
+                              Text="Bienvenue" 
+                              FontSize="14" 
+                              Foreground="White" 
+                              VerticalAlignment="Center"
+                              Margin="0,0,20,0"/>
+                    <Button x:Name="btnLogout" 
+                           Content="Déconnexion" 
+                           Click="BtnLogout_Click"
+                           Background="#E74C3C"
+                           Foreground="White"
+                           BorderThickness="0"
+                           Padding="15,8"
+                           Cursor="Hand"
+                           FontWeight="SemiBold">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Background="{TemplateBinding Background}"
+                                                   CornerRadius="5"
+                                                   Padding="{TemplateBinding Padding}">
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#C0392B"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Contenu principal -->
+        <Grid Grid.Row="1" Margin="30">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Titre de la page -->
+            <TextBlock Grid.Row="0" 
+                      Text="Tableau de bord" 
+                      FontSize="28" 
+                      FontWeight="Bold"
+                      Foreground="#2C3E50"
+                      Margin="0,0,0,30"/>
+
+            <!-- Grille de modules -->
+            <Grid Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Carte Véhicules -->
+                <Border Grid.Row="0" Grid.Column="0" 
+                       Background="White" 
+                       CornerRadius="10"
+                       Margin="10"
+                       Padding="30"
+                       Cursor="Hand"
+                       MouseLeftButtonDown="Vehicules_Click">
+                    <Border.Effect>
+                        <DropShadowEffect Color="#CCCCCC" Direction="270" ShadowDepth="3" BlurRadius="15" Opacity="0.3"/>
+                    </Border.Effect>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="🚙" FontSize="64" HorizontalAlignment="Center" Margin="0,0,0,20"/>
+                        <TextBlock Text="Véhicules" 
+                                  FontSize="24" 
+                                  FontWeight="SemiBold"
+                                  Foreground="#2C3E50"
+                                  HorizontalAlignment="Center"
+                                  Margin="0,0,0,10"/>
+                        <TextBlock Text="Gérer la flotte de véhicules" 
+                                  FontSize="13" 
+                                  Foreground="#7F8C8D"
+                                  HorizontalAlignment="Center"
+                                  TextAlignment="Center"
+                                  TextWrapping="Wrap"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Carte Utilisateurs -->
+                <Border Grid.Row="0" Grid.Column="1" 
+                       Background="White" 
+                       CornerRadius="10"
+                       Margin="10"
+                       Padding="30"
+                       Cursor="Hand"
+                       MouseLeftButtonDown="Utilisateurs_Click">
+                    <Border.Effect>
+                        <DropShadowEffect Color="#CCCCCC" Direction="270" ShadowDepth="3" BlurRadius="15" Opacity="0.3"/>
+                    </Border.Effect>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="👥" FontSize="64" HorizontalAlignment="Center" Margin="0,0,0,20"/>
+                        <TextBlock Text="Utilisateurs" 
+                                  FontSize="24" 
+                                  FontWeight="SemiBold"
+                                  Foreground="#2C3E50"
+                                  HorizontalAlignment="Center"
+                                  Margin="0,0,0,10"/>
+                        <TextBlock Text="Gérer les utilisateurs" 
+                                  FontSize="13" 
+                                  Foreground="#7F8C8D"
+                                  HorizontalAlignment="Center"
+                                  TextAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Carte Commandes -->
+                <Border Grid.Row="0" Grid.Column="2" 
+                       Background="White" 
+                       CornerRadius="10"
+                       Margin="10"
+                       Padding="30"
+                       Cursor="Hand"
+                       MouseLeftButtonDown="Commandes_Click">
+                    <Border.Effect>
+                        <DropShadowEffect Color="#CCCCCC" Direction="270" ShadowDepth="3" BlurRadius="15" Opacity="0.3"/>
+                    </Border.Effect>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="📋" FontSize="64" HorizontalAlignment="Center" Margin="0,0,0,20"/>
+                        <TextBlock Text="Commandes" 
+                                  FontSize="24" 
+                                  FontWeight="SemiBold"
+                                  Foreground="#2C3E50"
+                                  HorizontalAlignment="Center"
+                                  Margin="0,0,0,10"/>
+                        <TextBlock Text="Gérer les commandes" 
+                                  FontSize="13" 
+                                  Foreground="#7F8C8D"
+                                  HorizontalAlignment="Center"
+                                  TextAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Carte Paiements -->
+                <Border Grid.Row="1" Grid.Column="0" 
+                       Background="White" 
+                       CornerRadius="10"
+                       Margin="10"
+                       Padding="30"
+                       Cursor="Hand"
+                       MouseLeftButtonDown="Paiements_Click">
+                    <Border.Effect>
+                        <DropShadowEffect Color="#CCCCCC" Direction="270" ShadowDepth="3" BlurRadius="15" Opacity="0.3"/>
+                    </Border.Effect>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="💳" FontSize="64" HorizontalAlignment="Center" Margin="0,0,0,20"/>
+                        <TextBlock Text="Paiements" 
+                                  FontSize="24" 
+                                  FontWeight="SemiBold"
+                                  Foreground="#2C3E50"
+                                  HorizontalAlignment="Center"
+                                  Margin="0,0,0,10"/>
+                        <TextBlock Text="Gérer les paiements" 
+                                  FontSize="13" 
+                                  Foreground="#7F8C8D"
+                                  HorizontalAlignment="Center"
+                                  TextAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Carte Catégories -->
+                <Border Grid.Row="1" Grid.Column="1" 
+                       Background="White" 
+                       CornerRadius="10"
+                       Margin="10"
+                       Padding="30"
+                       Cursor="Hand"
+                       MouseLeftButtonDown="Categories_Click">
+                    <Border.Effect>
+                        <DropShadowEffect Color="#CCCCCC" Direction="270" ShadowDepth="3" BlurRadius="15" Opacity="0.3"/>
+                    </Border.Effect>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="📁" FontSize="64" HorizontalAlignment="Center" Margin="0,0,0,20"/>
+                        <TextBlock Text="Catégories" 
+                                  FontSize="24" 
+                                  FontWeight="SemiBold"
+                                  Foreground="#2C3E50"
+                                  HorizontalAlignment="Center"
+                                  Margin="0,0,0,10"/>
+                        <TextBlock Text="Gérer les catégories" 
+                                  FontSize="13" 
+                                  Foreground="#7F8C8D"
+                                  HorizontalAlignment="Center"
+                                  TextAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Carte Images -->
+                <Border Grid.Row="1" Grid.Column="2" 
+                       Background="White" 
+                       CornerRadius="10"
+                       Margin="10"
+                       Padding="30"
+                       Cursor="Hand"
+                       MouseLeftButtonDown="Images_Click">
+                    <Border.Effect>
+                        <DropShadowEffect Color="#CCCCCC" Direction="270" ShadowDepth="3" BlurRadius="15" Opacity="0.3"/>
+                    </Border.Effect>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="🖼️" FontSize="64" HorizontalAlignment="Center" Margin="0,0,0,20"/>
+                        <TextBlock Text="Images" 
+                                  FontSize="24" 
+                                  FontWeight="SemiBold"
+                                  Foreground="#2C3E50"
+                                  HorizontalAlignment="Center"
+                                  Margin="0,0,0,10"/>
+                        <TextBlock Text="Gérer les images" 
+                                  FontSize="13" 
+                                  Foreground="#7F8C8D"
+                                  HorizontalAlignment="Center"
+                                  TextAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Grid>
+
+        <!-- Barre de statut -->
+        <Border Grid.Row="2" Background="#ECF0F1" Height="35" BorderThickness="0,1,0,0" BorderBrush="#BDC3C7">
+            <Grid>
+                <TextBlock x:Name="txtStatus" 
+                          Text="Prêt" 
+                          VerticalAlignment="Center" 
+                          Margin="20,0"
+                          Foreground="#7F8C8D"
+                          FontSize="12"/>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>
