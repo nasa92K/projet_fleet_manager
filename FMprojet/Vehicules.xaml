@@ -1,0 +1,30 @@
+﻿<Window x:Class="FMprojet.Views.Vehicules"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Liste des Véhicules" Height="450" Width="800">
+    <Grid Margin="10">
+        <StackPanel>
+            <TextBlock Text="Rechercher un véhicule par référence" Margin="0,10"/>
+            <StackPanel Orientation="Horizontal">
+                <TextBox x:Name="txtReference" Width="200" Margin="0,0,10,0"/>
+                <Button Content="Rechercher" Click="BtnRechercher_Click" Width="100"/>
+            </StackPanel>
+            <ListView x:Name="listVehicules" Margin="0,20,0,0">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="ID" DisplayMemberBinding="{Binding Id}" Width="60"/>
+                        <GridViewColumn Header="Marque" DisplayMemberBinding="{Binding Marque}" Width="100"/>
+                        <GridViewColumn Header="Modèle" DisplayMemberBinding="{Binding Modele}" Width="100"/>
+                        <GridViewColumn Header="Immat." DisplayMemberBinding="{Binding Immatriculation}" Width="100"/>
+                        <GridViewColumn Header="Année" DisplayMemberBinding="{Binding Annee}" Width="60"/>
+                        <GridViewColumn Header="Prix" DisplayMemberBinding="{Binding Prix}" Width="80"/>
+                        <GridViewColumn Header="Kilométrage" DisplayMemberBinding="{Binding Kilometrage}" Width="90"/>
+                        <GridViewColumn Header="Carburant" DisplayMemberBinding="{Binding Carburant}" Width="90"/>
+                        <GridViewColumn Header="Transmission" DisplayMemberBinding="{Binding Transmission}" Width="100"/>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+            <Button Content="Retour" Click="BtnRetour_Click" Margin="0,20" Padding="5,2" Width="100" HorizontalAlignment="Right"/>
+        </StackPanel>
+    </Grid>
+</Window>

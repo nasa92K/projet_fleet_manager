@@ -1,0 +1,81 @@
+﻿<Window x:Class="FMprojet.Views.GererVehicules"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Gestion des Véhicules" Height="650" Width="700">
+    <Grid Margin="10">
+        <StackPanel>
+            <!-- Titre -->
+            <TextBlock Text="Gestion des Véhicules" FontSize="16" FontWeight="Bold" Margin="0,10"/>
+
+            <!-- Liste des véhicules -->
+            <ListView x:Name="listVehicules" Margin="0,10" Height="150">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="ID" DisplayMemberBinding="{Binding Id}" Width="50"/>
+                        <GridViewColumn Header="Marque" DisplayMemberBinding="{Binding Marque}" Width="100"/>
+                        <GridViewColumn Header="Modèle" DisplayMemberBinding="{Binding Modele}" Width="100"/>
+                        <GridViewColumn Header="Année" DisplayMemberBinding="{Binding Annee}" Width="60"/>
+                        <GridViewColumn Header="Prix" DisplayMemberBinding="{Binding Prix}" Width="80"/>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+
+            <!-- Formulaire d'ajout/modification -->
+            <TextBlock Text="Ajouter/Modifier un Véhicule" FontSize="14" FontWeight="Bold" Margin="0,10"/>
+
+            <!-- Champs du formulaire -->
+            <StackPanel Orientation="Horizontal" Margin="0,5">
+                <TextBlock Text="Marque:" Width="80"/>
+                <TextBox x:Name="txtMarque" Width="200" Margin="5,0"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0,5">
+                <TextBlock Text="Modèle:" Width="80"/>
+                <TextBox x:Name="txtModele" Width="200" Margin="5,0"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0,5">
+                <TextBlock Text="Immat.:" Width="80"/>
+                <TextBox x:Name="txtImmatriculation" Width="200" Margin="5,0"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0,5">
+                <TextBlock Text="Année:" Width="80"/>
+                <TextBox x:Name="txtAnnee" Width="200" Margin="5,0"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0,5">
+                <TextBlock Text="Prix:" Width="80"/>
+                <TextBox x:Name="txtPrix" Width="200" Margin="5,0"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0,5">
+                <TextBlock Text="Kilométrage:" Width="80"/>
+                <TextBox x:Name="txtKilometrage" Width="200" Margin="5,0"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0,5">
+                <TextBlock Text="Carburant:" Width="80"/>
+                <TextBox x:Name="txtCarburant" Width="200" Margin="5,0"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0,5">
+                <TextBlock Text="Transmission:" Width="80"/>
+                <TextBox x:Name="txtTransmission" Width="200" Margin="5,0"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0,5">
+                <TextBlock Text="Catégorie:" Width="80"/>
+                <TextBox x:Name="txtCategorieId" Width="200" Margin="5,0" Text="1"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0,5">
+                <TextBlock Text="Description:" Width="80"/>
+                <TextBox x:Name="txtDescription" Width="200" Margin="5,0"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0,5">
+                <TextBlock Text="Image:" Width="80"/>
+                <TextBox x:Name="txtImage" Width="200" Margin="5,0"/>
+            </StackPanel>
+
+            <!-- Boutons d'action -->
+            <StackPanel Orientation="Horizontal" Margin="0,10">
+                <Button Content="Ajouter" Click="BtnAjouterVehicule_Click" Margin="0,0,10,0" Padding="5,2" Width="100"/>
+                <Button Content="Modifier" Click="BtnModifierVehicule_Click" Margin="0,0,10,0" Padding="5,2" Width="100"/>
+                <Button Content="Supprimer" Click="BtnSupprimerVehicule_Click" Margin="0,0,10,0" Padding="5,2" Width="100"/>
+                <Button Content="Retour" Click="BtnRetour_Click" Padding="5,2" Width="100"/>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Window>
