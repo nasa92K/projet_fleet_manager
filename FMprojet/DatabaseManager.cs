@@ -108,7 +108,7 @@ namespace FMprojet.Database
                 try
                 {
                     connection.Open();
-                    string query = "SELECT * FROM utilisateurs";
+                    string query = "SELECT * FROM utilisateurs ORDER BY nom, prenom";
                     MySqlCommand cmd = new MySqlCommand(query, connection);
                     using (var reader = cmd.ExecuteReader())
                     {
@@ -131,6 +131,36 @@ namespace FMprojet.Database
                 }
             }
             return utilisateurs;
+        }
+
+        public bool SupprimerUtilisateur(int utilisateurId)
+        {
+            using (var connection = GetConnection())
+            {
+                try
+                {
+                    connection.Open();
+                    // Supprimer les commandes liées d'abord
+                    using (var cmdCommandes = new MySqlCommand(
+                        "DELETE FROM commandes WHERE utilisateur_id = @id", connection))
+                    {
+                        cmdCommandes.Parameters.AddWithValue("@id", utilisateurId);
+                        cmdCommandes.ExecuteNonQuery();
+                    }
+                    // Supprimer l'utilisateur
+                    using (var cmd = new MySqlCommand(
+                        "DELETE FROM utilisateurs WHERE id = @id", connection))
+                    {
+                        cmd.Parameters.AddWithValue("@id", utilisateurId);
+                        return cmd.ExecuteNonQuery() > 0;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Erreur lors de la suppression de l'utilisateur : {ex.Message}");
+                    return false;
+                }
+            }
         }
 
         // ======================
@@ -1004,6 +1034,42 @@ namespace FMprojet.Database
                 {
                     connection.Open();
                     string query = "SELECT COUNT(*) FROM commandes WHERE statut = 'En attente'";
+                    MySqlCommand cmd = new MySqlCommand(query, connection);
+                    return Convert.ToInt32(cmd.ExecuteScalar());
+                }
+                catch
+                {
+                    return 0;
+                }
+            }
+        }
+
+        public int CompterToutesCommandes()
+        {
+            using (var connection = GetConnection())
+            {
+                try
+                {
+                    connection.Open();
+                    string query = "SELECT COUNT(*) FROM commandes";
+                    MySqlCommand cmd = new MySqlCommand(query, connection);
+                    return Convert.ToInt32(cmd.ExecuteScalar());
+                }
+                catch
+                {
+                    return 0;
+                }
+            }
+        }
+
+        public int CompterUtilisateurs()
+        {
+            using (var connection = GetConnection())
+            {
+                try
+                {
+                    connection.Open();
+                    string query = "SELECT COUNT(*) FROM utilisateurs";
                     MySqlCommand cmd = new MySqlCommand(query, connection);
                     return Convert.ToInt32(cmd.ExecuteScalar());
                 }

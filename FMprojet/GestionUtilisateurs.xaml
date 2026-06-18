@@ -1,55 +1,389 @@
-﻿<Window x:Class="FMprojet.Views.GestionUtilisateurs"
+<Window x:Class="FMprojet.Views.GestionUtilisateurs"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Gestion des Utilisateurs" Height="450" Width="600">
-    <Grid Margin="10">
-        <StackPanel>
-            <TextBlock Text="Gestion des Utilisateurs" FontSize="16" FontWeight="Bold" Margin="0,10"/>
+        Title="Gestion des Utilisateurs - Fleet Manager"
+        Height="680" Width="1000"
+        MinHeight="580" MinWidth="860"
+        WindowStartupLocation="CenterScreen"
+        Background="#0F1623">
 
-            <!-- Liste des utilisateurs -->
-            <ListView x:Name="listUtilisateurs" Margin="0,10">
-                <ListView.View>
-                    <GridView>
-                        <GridViewColumn Header="ID" DisplayMemberBinding="{Binding Id}" Width="50"/>
-                        <GridViewColumn Header="Nom" DisplayMemberBinding="{Binding Nom}" Width="100"/>
-                        <GridViewColumn Header="Prénom" DisplayMemberBinding="{Binding Prenom}" Width="100"/>
-                        <GridViewColumn Header="Email" DisplayMemberBinding="{Binding Email}" Width="150"/>
-                        <GridViewColumn Header="Rôle" DisplayMemberBinding="{Binding Role}" Width="80"/>
-                    </GridView>
-                </ListView.View>
-            </ListView>
+    <Window.Resources>
+        <!-- Bouton style dark -->
+        <Style x:Key="DarkBtn" TargetType="Button">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="16,9"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bd" Background="{TemplateBinding Background}"
+                                CornerRadius="9" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Opacity" Value="0.85"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="bd" Property="Opacity" Value="0.7"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
 
-            <!-- Formulaire pour ajouter un utilisateur -->
-            <TextBlock Text="Ajouter un Utilisateur" FontSize="14" FontWeight="Bold" Margin="0,10"/>
-            <StackPanel Orientation="Horizontal" Margin="0,5">
-                <TextBlock Text="Nom:" Width="80"/>
-                <TextBox x:Name="txtNouveauNom" Width="150" Margin="5,0"/>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal" Margin="0,5">
-                <TextBlock Text="Prénom:" Width="80"/>
-                <TextBox x:Name="txtNouveauPrenom" Width="150" Margin="5,0"/>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal" Margin="0,5">
-                <TextBlock Text="Email:" Width="80"/>
-                <TextBox x:Name="txtNouveauEmail" Width="150" Margin="5,0"/>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal" Margin="0,5">
-                <TextBlock Text="Mot de passe:" Width="80"/>
-                <PasswordBox x:Name="txtNouveauMotDePasse" Width="150" Margin="5,0"/>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal" Margin="0,5">
-                <TextBlock Text="Rôle:" Width="80"/>
-                <ComboBox x:Name="cmbNouveauRole" Width="150" Margin="5,0">
-                    <ComboBoxItem Content="utilisateur"/>
-                    <ComboBoxItem Content="admin"/>
-                </ComboBox>
-            </StackPanel>
+        <!-- TextBox dark -->
+        <Style x:Key="DarkInput" TargetType="TextBox">
+            <Setter Property="Background" Value="#0F1623"/>
+            <Setter Property="Foreground" Value="#EDF1FA"/>
+            <Setter Property="BorderBrush" Value="#1F2E45"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="10,8"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="CaretBrush" Value="#3D8EF0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="8"
+                                Padding="{TemplateBinding Padding}">
+                            <ScrollViewer x:Name="PART_ContentHost" Margin="0"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
 
-            <!-- Bouton pour ajouter l'utilisateur -->
-            <Button Content="Ajouter" Click="BtnAjouterUtilisateur_Click" Margin="0,10" Padding="5,2" Width="100"/>
+        <!-- PasswordBox dark -->
+        <Style x:Key="DarkPassword" TargetType="PasswordBox">
+            <Setter Property="Background" Value="#0F1623"/>
+            <Setter Property="Foreground" Value="#EDF1FA"/>
+            <Setter Property="BorderBrush" Value="#1F2E45"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="10,8"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="PasswordBox">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="8"
+                                Padding="{TemplateBinding Padding}">
+                            <ScrollViewer x:Name="PART_ContentHost" Margin="0"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
 
-            <!-- Bouton Retour -->
-            <Button Content="Retour" Click="BtnRetour_Click" Margin="0,10" Padding="5,2" Width="100"/>
-        </StackPanel>
+        <!-- ComboBox dark -->
+        <Style x:Key="DarkCombo" TargetType="ComboBox">
+            <Setter Property="Background" Value="#0F1623"/>
+            <Setter Property="Foreground" Value="#EDF1FA"/>
+            <Setter Property="BorderBrush" Value="#1F2E45"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="10,8"/>
+            <Setter Property="FontSize" Value="13"/>
+        </Style>
+
+        <!-- Label mini -->
+        <Style x:Key="InputLabel" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#6B7FA8"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Margin" Value="0,0,0,4"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <!-- Topbar -->
+            <RowDefinition Height="64"/>
+            <!-- Contenu -->
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- ═══ TOPBAR ═══ -->
+        <Border Grid.Row="0" Background="#141D2E"
+                BorderThickness="0,0,0,1" BorderBrush="#1F2E45">
+            <Grid Margin="24,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="👥  Gestion des Utilisateurs"
+                               FontSize="18" FontWeight="Bold" Foreground="#EDF1FA"/>
+                    <TextBlock x:Name="txtStatut"
+                               Text="Chargement…"
+                               FontSize="12" Foreground="#6B7FA8" Margin="0,2,0,0"/>
+                </StackPanel>
+                <Button Grid.Column="1"
+                        Content="← Retour à l'accueil"
+                        Click="BtnRetour_Click"
+                        Style="{StaticResource DarkBtn}"
+                        Background="#E05C5C"/>
+            </Grid>
+        </Border>
+
+        <!-- ═══ CORPS ═══ -->
+        <Grid Grid.Row="1" Margin="20,16">
+            <Grid.ColumnDefinitions>
+                <!-- Tableau utilisateurs -->
+                <ColumnDefinition Width="*"/>
+                <!-- Séparateur -->
+                <ColumnDefinition Width="16"/>
+                <!-- Panneau formulaire -->
+                <ColumnDefinition Width="310"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- ─── TABLE UTILISATEURS ─── -->
+            <Border Grid.Column="0" Background="#1C2740" CornerRadius="14" Padding="0">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="18" ShadowDepth="4" Opacity="0.22" Color="#000000"/>
+                </Border.Effect>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- En-tête tableau -->
+                    <Border Grid.Row="0" Background="#192236" CornerRadius="14,14,0,0" Padding="20,14">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel>
+                                <TextBlock Text="Liste des utilisateurs"
+                                           FontSize="14" FontWeight="Bold"
+                                           Foreground="#EDF1FA"/>
+                                <TextBlock x:Name="txtNbUtilisateurs"
+                                           Text=""
+                                           FontSize="11" Foreground="#6B7FA8"
+                                           Margin="0,2,0,0"/>
+                            </StackPanel>
+                            <!-- Barre de recherche -->
+                            <Border Grid.Column="1" Background="#0F1623"
+                                    CornerRadius="8" Padding="10,6">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="🔍" FontSize="13" VerticalAlignment="Center"
+                                               Foreground="#6B7FA8"/>
+                                    <TextBox x:Name="txtRecherche"
+                                             Style="{StaticResource DarkInput}"
+                                             Background="Transparent"
+                                             BorderThickness="0"
+                                             Padding="6,0"
+                                             Width="160"
+                                             Foreground="#EDF1FA"
+                                             FontSize="12"
+                                             VerticalAlignment="Center"
+                                             TextChanged="TxtRecherche_TextChanged">
+                                        <TextBox.Resources>
+                                            <Style TargetType="Border">
+                                                <Setter Property="CornerRadius" Value="0"/>
+                                            </Style>
+                                        </TextBox.Resources>
+                                    </TextBox>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </Border>
+
+                    <!-- ListView stylée -->
+                    <ListView x:Name="listUtilisateurs"
+                              Grid.Row="1"
+                              Background="Transparent"
+                              BorderThickness="0"
+                              Foreground="#EDF1FA"
+                              FontSize="13"
+                              Margin="0"
+                              SelectionChanged="ListUtilisateurs_SelectionChanged">
+                        <ListView.Resources>
+                            <Style TargetType="ListViewItem">
+                                <Setter Property="Background" Value="Transparent"/>
+                                <Setter Property="Foreground" Value="#EDF1FA"/>
+                                <Setter Property="BorderThickness" Value="0,0,0,1"/>
+                                <Setter Property="BorderBrush" Value="#1F2E45"/>
+                                <Setter Property="Padding" Value="20,10"/>
+                                <Setter Property="Margin" Value="0"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#1F2E45"/>
+                                    </Trigger>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter Property="Background" Value="#1E3A5F"/>
+                                        <Setter Property="Foreground" Value="#EDF1FA"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                            <Style TargetType="GridViewColumnHeader">
+                                <Setter Property="Background" Value="Transparent"/>
+                                <Setter Property="Foreground" Value="#3D8EF0"/>
+                                <Setter Property="FontWeight" Value="Bold"/>
+                                <Setter Property="FontSize" Value="11"/>
+                                <Setter Property="Padding" Value="20,10"/>
+                                <Setter Property="BorderThickness" Value="0,0,0,1"/>
+                                <Setter Property="BorderBrush" Value="#1F2E45"/>
+                            </Style>
+                        </ListView.Resources>
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="ID" DisplayMemberBinding="{Binding Id}" Width="55"/>
+                                <GridViewColumn Header="NOM" DisplayMemberBinding="{Binding Nom}" Width="110"/>
+                                <GridViewColumn Header="PRÉNOM" DisplayMemberBinding="{Binding Prenom}" Width="110"/>
+                                <GridViewColumn Header="EMAIL" DisplayMemberBinding="{Binding Email}" Width="200"/>
+                                <GridViewColumn Header="RÔLE" Width="100">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Border CornerRadius="6" Padding="8,3">
+                                                <Border.Style>
+                                                    <Style TargetType="Border">
+                                                        <Setter Property="Background" Value="#1F2E45"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding Role}" Value="admin">
+                                                                <Setter Property="Background" Value="#1E3A5F"/>
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding Role}" Value="super_admin">
+                                                                <Setter Property="Background" Value="#2A1F45"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Border.Style>
+                                                <TextBlock Text="{Binding Role}" FontSize="11" FontWeight="SemiBold">
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock">
+                                                            <Setter Property="Foreground" Value="#1BC5BD"/>
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding Role}" Value="admin">
+                                                                    <Setter Property="Foreground" Value="#3D8EF0"/>
+                                                                </DataTrigger>
+                                                                <DataTrigger Binding="{Binding Role}" Value="super_admin">
+                                                                    <Setter Property="Foreground" Value="#9B72F2"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
+                                            </Border>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+
+                    <!-- Actions bas -->
+                    <Border Grid.Row="2" Background="#192236" CornerRadius="0,0,14,14" Padding="20,12">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <Button x:Name="btnSupprimerUtilisateur"
+                                    Content="🗑  Supprimer"
+                                    Click="BtnSupprimerUtilisateur_Click"
+                                    Style="{StaticResource DarkBtn}"
+                                    Background="#E05C5C"
+                                    IsEnabled="False"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </Border>
+
+            <!-- ─── FORMULAIRE AJOUT ─── -->
+            <Border Grid.Column="2" Background="#1C2740" CornerRadius="14">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="18" ShadowDepth="4" Opacity="0.22" Color="#000000"/>
+                </Border.Effect>
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="22,20">
+
+                        <!-- Titre section -->
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,18">
+                            <TextBlock Text="➕" FontSize="16" VerticalAlignment="Center"/>
+                            <TextBlock Text="  Ajouter un utilisateur"
+                                       FontSize="14" FontWeight="Bold"
+                                       Foreground="#EDF1FA"
+                                       VerticalAlignment="Center"/>
+                        </StackPanel>
+
+                        <!-- Nom -->
+                        <TextBlock Text="NOM" Style="{StaticResource InputLabel}"/>
+                        <TextBox x:Name="txtNouveauNom"
+                                 Style="{StaticResource DarkInput}"
+                                 Margin="0,0,0,14"/>
+
+                        <!-- Prénom -->
+                        <TextBlock Text="PRÉNOM" Style="{StaticResource InputLabel}"/>
+                        <TextBox x:Name="txtNouveauPrenom"
+                                 Style="{StaticResource DarkInput}"
+                                 Margin="0,0,0,14"/>
+
+                        <!-- Email -->
+                        <TextBlock Text="EMAIL" Style="{StaticResource InputLabel}"/>
+                        <TextBox x:Name="txtNouveauEmail"
+                                 Style="{StaticResource DarkInput}"
+                                 Margin="0,0,0,14"/>
+
+                        <!-- Mot de passe -->
+                        <TextBlock Text="MOT DE PASSE" Style="{StaticResource InputLabel}"/>
+                        <PasswordBox x:Name="txtNouveauMotDePasse"
+                                     Style="{StaticResource DarkPassword}"
+                                     Margin="0,0,0,14"/>
+
+                        <!-- Rôle -->
+                        <TextBlock Text="RÔLE" Style="{StaticResource InputLabel}"/>
+                        <ComboBox x:Name="cmbNouveauRole"
+                                  Style="{StaticResource DarkCombo}"
+                                  Margin="0,0,0,22">
+                            <ComboBoxItem Content="utilisateur"/>
+                            <ComboBoxItem Content="admin"/>
+                        </ComboBox>
+
+                        <!-- Bouton Ajouter -->
+                        <Button Content="✅  Ajouter l'utilisateur"
+                                Click="BtnAjouterUtilisateur_Click"
+                                Style="{StaticResource DarkBtn}"
+                                Background="#3D8EF0"
+                                HorizontalAlignment="Stretch"
+                                Margin="0,0,0,12"/>
+
+                        <!-- Séparateur -->
+                        <Separator Background="#1F2E45" Margin="0,6,0,16"/>
+
+                        <!-- Info utilisateur sélectionné -->
+                        <Border x:Name="panneauInfoUser"
+                                Background="#1F2E45" CornerRadius="10"
+                                Padding="14,12" Visibility="Collapsed">
+                            <StackPanel>
+                                <TextBlock Text="UTILISATEUR SÉLECTIONNÉ"
+                                           Style="{StaticResource InputLabel}"
+                                           Margin="0,0,0,8"/>
+                                <TextBlock x:Name="txtInfoNom"
+                                           FontSize="15" FontWeight="Bold"
+                                           Foreground="#EDF1FA"/>
+                                <TextBlock x:Name="txtInfoEmail"
+                                           FontSize="12" Foreground="#6B7FA8"
+                                           Margin="0,2,0,4"/>
+                                <Border x:Name="badgeInfoRole"
+                                        Background="#1C2740" CornerRadius="6"
+                                        Padding="8,3" HorizontalAlignment="Left">
+                                    <TextBlock x:Name="txtInfoRole"
+                                               FontSize="11" FontWeight="SemiBold"
+                                               Foreground="#1BC5BD"/>
+                                </Border>
+                            </StackPanel>
+                        </Border>
+
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+        </Grid>
     </Grid>
 </Window>

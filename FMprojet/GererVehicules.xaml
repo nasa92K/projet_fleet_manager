@@ -2,40 +2,119 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
-        Title="Gestion des Véhicules" Height="720" Width="1060" MinHeight="650" MinWidth="980"
-        WindowStartupLocation="CenterScreen">
+        Title="Gestion des Véhicules - Fleet Manager"
+        Height="740" Width="1100"
+        MinHeight="640" MinWidth="960"
+        WindowStartupLocation="CenterScreen"
+        Background="#0F1623">
 
-    <Grid Margin="16">
+    <Window.Resources>
+        <!-- Bouton dark générique -->
+        <Style x:Key="DarkActionBtn" TargetType="Button">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="14,9"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bd" Background="{TemplateBinding Background}"
+                                CornerRadius="9" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Opacity" Value="0.82"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="bd" Property="Opacity" Value="0.65"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="bd" Property="Opacity" Value="0.35"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Input dark -->
+        <Style x:Key="DarkInput" TargetType="TextBox">
+            <Setter Property="Background" Value="#0F1623"/>
+            <Setter Property="Foreground" Value="#EDF1FA"/>
+            <Setter Property="BorderBrush" Value="#1F2E45"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="9,7"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="CaretBrush" Value="#3D8EF0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="7" Padding="{TemplateBinding Padding}">
+                            <ScrollViewer x:Name="PART_ContentHost" Margin="0"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Label mini dark -->
+        <Style x:Key="FieldLabel" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#6B7FA8"/>
+            <Setter Property="FontSize" Value="10"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Margin" Value="0,0,0,3"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="64"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- En-tête -->
-        <Border Grid.Row="0" Background="{StaticResource Brush.Navy}" CornerRadius="12" Padding="16">
-            <Grid>
+        <!-- ═══ TOPBAR ═══ -->
+        <Border Grid.Row="0" Background="#141D2E"
+                BorderThickness="0,0,0,1" BorderBrush="#1F2E45">
+            <Grid Margin="24,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <StackPanel>
-                    <TextBlock Text="🚗  Gestion des véhicules" FontSize="18" FontWeight="Bold" Foreground="White"/>
-                    <TextBlock x:Name="txtVehiculeStatut" Text="" FontSize="12" Foreground="#8FA3B8" Margin="0,4,0,0"/>
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="🚗  Gestion des véhicules"
+                               FontSize="18" FontWeight="Bold" Foreground="#EDF1FA"/>
+                    <TextBlock x:Name="txtVehiculeStatut"
+                               Text="Chargement…"
+                               FontSize="12" Foreground="#6B7FA8" Margin="0,2,0,0"/>
                 </StackPanel>
-                <Button Grid.Column="1" Content="← Retour" Click="BtnRetour_Click" Style="{StaticResource DangerButton}" Padding="12,8"/>
+                <Button Grid.Column="1"
+                        Content="← Retour"
+                        Click="BtnRetour_Click"
+                        Style="{StaticResource DarkActionBtn}"
+                        Background="#E05C5C"/>
             </Grid>
         </Border>
 
-        <Grid Grid.Row="1" Margin="0,14,0,14">
+        <!-- ═══ CORPS ═══ -->
+        <Grid Grid.Row="1" Margin="20,16,20,10">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="12"/>
-                <ColumnDefinition Width="420"/>
+                <ColumnDefinition Width="16"/>
+                <ColumnDefinition Width="380"/>
             </Grid.ColumnDefinitions>
 
-            <!-- Liste -->
-            <Border Grid.Column="0" Background="White" CornerRadius="12" Padding="12">
+            <!-- ─── LISTE + FORMULAIRE GAUCHE ─── -->
+            <Border Grid.Column="0" Background="#1C2740" CornerRadius="14">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="18" ShadowDepth="4" Opacity="0.22" Color="#000"/>
+                </Border.Effect>
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -44,100 +123,157 @@
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
-                    <TextBlock Text="Véhicules" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource Brush.Navy}"/>
+                    <!-- En-tête liste -->
+                    <Border Grid.Row="0" Background="#192236" CornerRadius="14,14,0,0" Padding="18,14">
+                        <TextBlock Text="Parc de véhicules"
+                                   FontSize="14" FontWeight="Bold" Foreground="#EDF1FA"/>
+                    </Border>
 
-                    <ListView x:Name="listVehicules" Grid.Row="1" Margin="0,10,0,10" BorderThickness="0"
+                    <!-- ListView dark -->
+                    <ListView x:Name="listVehicules"
+                              Grid.Row="1"
+                              Background="Transparent"
+                              BorderThickness="0"
+                              Foreground="#EDF1FA"
+                              FontSize="12"
                               SelectionChanged="ListVehicules_SelectionChanged">
+                        <ListView.Resources>
+                            <Style TargetType="ListViewItem">
+                                <Setter Property="Background" Value="Transparent"/>
+                                <Setter Property="Foreground" Value="#EDF1FA"/>
+                                <Setter Property="BorderThickness" Value="0,0,0,1"/>
+                                <Setter Property="BorderBrush" Value="#1F2E45"/>
+                                <Setter Property="Padding" Value="18,10"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#1F2E45"/>
+                                    </Trigger>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter Property="Background" Value="#1E3A5F"/>
+                                        <Setter Property="Foreground" Value="#EDF1FA"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                            <Style TargetType="GridViewColumnHeader">
+                                <Setter Property="Background" Value="Transparent"/>
+                                <Setter Property="Foreground" Value="#3D8EF0"/>
+                                <Setter Property="FontWeight" Value="Bold"/>
+                                <Setter Property="FontSize" Value="10"/>
+                                <Setter Property="Padding" Value="18,9"/>
+                                <Setter Property="BorderThickness" Value="0,0,0,1"/>
+                                <Setter Property="BorderBrush" Value="#1F2E45"/>
+                            </Style>
+                        </ListView.Resources>
                         <ListView.View>
                             <GridView>
-                                <GridViewColumn Header="ID" DisplayMemberBinding="{Binding Id}" Width="50"/>
-                                <GridViewColumn Header="Marque" DisplayMemberBinding="{Binding Marque}" Width="120"/>
-                                <GridViewColumn Header="Modèle" DisplayMemberBinding="{Binding Modele}" Width="140"/>
-                                <GridViewColumn Header="Immat." DisplayMemberBinding="{Binding Immatriculation}" Width="120"/>
-                                <GridViewColumn Header="Année" DisplayMemberBinding="{Binding Annee}" Width="70"/>
-                                <GridViewColumn Header="KM" DisplayMemberBinding="{Binding Kilometrage}" Width="80"/>
+                                <GridViewColumn Header="ID" DisplayMemberBinding="{Binding Id}" Width="48"/>
+                                <GridViewColumn Header="MARQUE" DisplayMemberBinding="{Binding Marque}" Width="100"/>
+                                <GridViewColumn Header="MODÈLE" DisplayMemberBinding="{Binding Modele}" Width="120"/>
+                                <GridViewColumn Header="IMMAT." DisplayMemberBinding="{Binding Immatriculation}" Width="110"/>
+                                <GridViewColumn Header="ANNÉE" DisplayMemberBinding="{Binding Annee}" Width="62"/>
+                                <GridViewColumn Header="KM" DisplayMemberBinding="{Binding Kilometrage}" Width="75"/>
+                                <GridViewColumn Header="CARBURANT" DisplayMemberBinding="{Binding Carburant}" Width="90"/>
                             </GridView>
                         </ListView.View>
                     </ListView>
 
-                    <Expander Grid.Row="2" Header="Ajouter un véhicule" Margin="0,0,0,10" IsExpanded="False">
-                        <Grid Margin="8">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="12"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
+                    <!-- Formulaire ajout (expander dark) -->
+                    <Border Grid.Row="2" Background="#192236" Padding="16,10">
+                        <Expander x:Name="expanderAjout"
+                                  Header="➕  Ajouter un nouveau véhicule"
+                                  Foreground="#3D8EF0"
+                                  FontWeight="SemiBold"
+                                  IsExpanded="False">
+                            <Grid Margin="0,12,0,4">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="10"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="10"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
 
-                            <StackPanel Grid.Row="0">
-                                <TextBlock Text="Marque" Foreground="#555"/>
-                                <TextBox x:Name="txtMarque"/>
-                            </StackPanel>
-                            <StackPanel Grid.Row="0" Grid.Column="2">
-                                <TextBlock Text="Modèle" Foreground="#555"/>
-                                <TextBox x:Name="txtModele"/>
-                            </StackPanel>
+                                <!-- Ligne 1 -->
+                                <StackPanel Grid.Row="0" Grid.Column="0">
+                                    <TextBlock Text="MARQUE" Style="{StaticResource FieldLabel}"/>
+                                    <TextBox x:Name="txtMarque" Style="{StaticResource DarkInput}"/>
+                                </StackPanel>
+                                <StackPanel Grid.Row="0" Grid.Column="2">
+                                    <TextBlock Text="MODÈLE" Style="{StaticResource FieldLabel}"/>
+                                    <TextBox x:Name="txtModele" Style="{StaticResource DarkInput}"/>
+                                </StackPanel>
+                                <StackPanel Grid.Row="0" Grid.Column="4">
+                                    <TextBlock Text="IMMATRICULATION" Style="{StaticResource FieldLabel}"/>
+                                    <TextBox x:Name="txtImmatriculation" Style="{StaticResource DarkInput}"/>
+                                </StackPanel>
 
-                            <StackPanel Grid.Row="1">
-                                <TextBlock Text="Immatriculation" Foreground="#555" Margin="0,10,0,0"/>
-                                <TextBox x:Name="txtImmatriculation" Margin="0,10,0,0"/>
-                            </StackPanel>
-                            <StackPanel Grid.Row="1" Grid.Column="2">
-                                <TextBlock Text="Année" Foreground="#555" Margin="0,10,0,0"/>
-                                <TextBox x:Name="txtAnnee" Margin="0,10,0,0"/>
-                            </StackPanel>
+                                <!-- Ligne 2 -->
+                                <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,8,0,0">
+                                    <TextBlock Text="ANNÉE" Style="{StaticResource FieldLabel}"/>
+                                    <TextBox x:Name="txtAnnee" Style="{StaticResource DarkInput}"/>
+                                </StackPanel>
+                                <StackPanel Grid.Row="1" Grid.Column="2" Margin="0,8,0,0">
+                                    <TextBlock Text="PRIX (€)" Style="{StaticResource FieldLabel}"/>
+                                    <TextBox x:Name="txtPrix" Style="{StaticResource DarkInput}"/>
+                                </StackPanel>
+                                <StackPanel Grid.Row="1" Grid.Column="4" Margin="0,8,0,0">
+                                    <TextBlock Text="KILOMÉTRAGE" Style="{StaticResource FieldLabel}"/>
+                                    <TextBox x:Name="txtKilometrage" Style="{StaticResource DarkInput}"/>
+                                </StackPanel>
 
-                            <StackPanel Grid.Row="2">
-                                <TextBlock Text="Prix" Foreground="#555" Margin="0,10,0,0"/>
-                                <TextBox x:Name="txtPrix" Margin="0,10,0,0"/>
-                            </StackPanel>
-                            <StackPanel Grid.Row="2" Grid.Column="2">
-                                <TextBlock Text="Kilométrage" Foreground="#555" Margin="0,10,0,0"/>
-                                <TextBox x:Name="txtKilometrage" Margin="0,10,0,0"/>
-                            </StackPanel>
+                                <!-- Ligne 3 -->
+                                <StackPanel Grid.Row="2" Grid.Column="0" Margin="0,8,0,0">
+                                    <TextBlock Text="CARBURANT" Style="{StaticResource FieldLabel}"/>
+                                    <TextBox x:Name="txtCarburant" Style="{StaticResource DarkInput}"/>
+                                </StackPanel>
+                                <StackPanel Grid.Row="2" Grid.Column="2" Margin="0,8,0,0">
+                                    <TextBlock Text="TRANSMISSION" Style="{StaticResource FieldLabel}"/>
+                                    <TextBox x:Name="txtTransmission" Style="{StaticResource DarkInput}"/>
+                                </StackPanel>
+                                <StackPanel Grid.Row="2" Grid.Column="4" Margin="0,8,0,0">
+                                    <TextBlock Text="CATÉGORIE ID" Style="{StaticResource FieldLabel}"/>
+                                    <TextBox x:Name="txtCategorieId" Style="{StaticResource DarkInput}" Text="1"/>
+                                </StackPanel>
 
-                            <StackPanel Grid.Row="3">
-                                <TextBlock Text="Carburant" Foreground="#555" Margin="0,10,0,0"/>
-                                <TextBox x:Name="txtCarburant" Margin="0,10,0,0"/>
-                            </StackPanel>
-                            <StackPanel Grid.Row="3" Grid.Column="2">
-                                <TextBlock Text="Transmission" Foreground="#555" Margin="0,10,0,0"/>
-                                <TextBox x:Name="txtTransmission" Margin="0,10,0,0"/>
-                            </StackPanel>
+                                <!-- Hidden champs -->
+                                <TextBox x:Name="txtImage" Visibility="Collapsed"/>
+                                <TextBox x:Name="txtDescription" Visibility="Collapsed"/>
+                            </Grid>
+                        </Expander>
+                    </Border>
 
-                            <StackPanel Grid.Row="4">
-                                <TextBlock Text="Catégorie ID" Foreground="#555" Margin="0,10,0,0"/>
-                                <TextBox x:Name="txtCategorieId" Margin="0,10,0,0" Text="1"/>
-                            </StackPanel>
-                            <StackPanel Grid.Row="4" Grid.Column="2">
-                                <TextBlock Text="Image" Foreground="#555" Margin="0,10,0,0"/>
-                                <TextBox x:Name="txtImage" Margin="0,10,0,0"/>
-                            </StackPanel>
-
-                            <StackPanel Grid.Row="5" Grid.ColumnSpan="3">
-                                <TextBlock Text="Description" Foreground="#555" Margin="0,10,0,0"/>
-                                <TextBox x:Name="txtDescription" Margin="0,10,0,0"/>
-                            </StackPanel>
-                        </Grid>
-                    </Expander>
-
-                    <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right">
-                        <Button Content="Ajouter" Click="BtnAjouterVehicule_Click" Style="{StaticResource PrimaryButton}" Margin="0,0,10,0"/>
-                        <Button Content="Modifier / Suivi" Click="BtnModifierVehicule_Click" Style="{StaticResource SecondaryButton}"/>
-                        <Button Content="Supprimer" Click="BtnSupprimerVehicule_Click" Style="{StaticResource DangerButton}" Margin="10,0,0,0"/>
-                    </StackPanel>
+                    <!-- Boutons d'action -->
+                    <Border Grid.Row="3" Background="#192236" CornerRadius="0,0,14,14" Padding="16,12">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <Button Content="✅  Ajouter"
+                                    Click="BtnAjouterVehicule_Click"
+                                    Style="{StaticResource DarkActionBtn}"
+                                    Background="#3D8EF0"
+                                    Margin="0,0,10,0"/>
+                            <Button Content="✏  Modifier / Suivi"
+                                    Click="BtnModifierVehicule_Click"
+                                    Style="{StaticResource DarkActionBtn}"
+                                    Background="#1BC5BD"
+                                    Margin="0,0,10,0"/>
+                            <Button Content="🗑  Supprimer"
+                                    Click="BtnSupprimerVehicule_Click"
+                                    Style="{StaticResource DarkActionBtn}"
+                                    Background="#E05C5C"/>
+                        </StackPanel>
+                    </Border>
                 </Grid>
             </Border>
 
-            <!-- Détails + graphique -->
-            <Border Grid.Column="2" Background="White" CornerRadius="12" Padding="12">
+            <!-- ─── PANNEAU DÉTAILS & SUIVI DROITE ─── -->
+            <Border Grid.Column="2" Background="#1C2740" CornerRadius="14">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="18" ShadowDepth="4" Opacity="0.22" Color="#000"/>
+                </Border.Effect>
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -147,57 +283,108 @@
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
-                    <TextBlock Text="Détails &amp; suivi" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource Brush.Navy}"/>
-                    <TextBlock x:Name="txtVehiculeSelection" Grid.Row="1" Text="Sélectionne un véhicule…" Foreground="{StaticResource Brush.TextMuted}" Margin="0,4,0,10"/>
-
-                    <Border Grid.Row="2" Background="{StaticResource Brush.Bg}" CornerRadius="10" Padding="10">
+                    <!-- Titre panneau droite -->
+                    <Border Grid.Row="0" Background="#192236" CornerRadius="14,14,0,0" Padding="18,14">
                         <StackPanel>
-                            <TextBlock Text="Dépenses (30 jours)" FontWeight="SemiBold" Foreground="{StaticResource Brush.Navy}"/>
-                            <TextBlock x:Name="txtVehiculeChartInfo" FontSize="11" Foreground="#95A5A6" Margin="0,2,0,8"/>
-                            <lvc:CartesianChart x:Name="chartVehiculeDepenses" Height="210"/>
+                            <TextBlock Text="Détails &amp; suivi journalier"
+                                       FontSize="14" FontWeight="Bold" Foreground="#EDF1FA"/>
+                            <TextBlock x:Name="txtVehiculeSelection"
+                                       Text="Sélectionne un véhicule dans la liste…"
+                                       FontSize="11" Foreground="#6B7FA8" Margin="0,3,0,0"/>
                         </StackPanel>
                     </Border>
 
-                    <GroupBox Grid.Row="3" Header="Saisie rapide (journalier)" Margin="0,12,0,0">
-                        <Grid Margin="8">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
+                    <!-- Graphique dépenses -->
+                    <Border Grid.Row="1" Background="#192236" Margin="0,1,0,0" Padding="16,12">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                                <TextBlock Text="📈" FontSize="14" VerticalAlignment="Center"/>
+                                <TextBlock Text="  Dépenses (30 jours)"
+                                           FontSize="12" FontWeight="SemiBold"
+                                           Foreground="#EDF1FA" VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <TextBlock x:Name="txtVehiculeChartInfo"
+                                       FontSize="10" Foreground="#6B7FA8"
+                                       Margin="0,0,0,8"/>
+                            <lvc:CartesianChart x:Name="chartVehiculeDepenses" Height="180"/>
+                        </StackPanel>
+                    </Border>
 
-                            <TextBlock Text="Date" Foreground="#555"/>
-                            <DatePicker x:Name="dpSuiviDate" Grid.Column="1" />
+                    <!-- Formulaire suivi journalier -->
+                    <Border Grid.Row="2" Padding="16,14" Background="#1C2740">
+                        <StackPanel>
+                            <TextBlock Text="SAISIE RAPIDE JOURNALIÈRE"
+                                       Style="{StaticResource FieldLabel}"
+                                       Margin="0,0,0,10"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="10"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
 
-                            <TextBlock Grid.Row="1" Text="Kilométrage" Foreground="#555" Margin="0,10,0,0"/>
-                            <TextBox x:Name="txtSuiviKm" Grid.Row="1" Grid.Column="1" Margin="0,10,0,0"/>
+                                <!-- Date -->
+                                <TextBlock Grid.Row="0" Grid.ColumnSpan="3"
+                                           Text="DATE" Style="{StaticResource FieldLabel}"/>
+                                <DatePicker x:Name="dpSuiviDate"
+                                            Grid.Row="1" Grid.ColumnSpan="3"
+                                            Background="#0F1623"
+                                            Foreground="#EDF1FA"
+                                            Margin="0,0,0,10"/>
 
-                            <TextBlock Grid.Row="2" Text="Carburant (qte)" Foreground="#555" Margin="0,10,0,0"/>
-                            <TextBox x:Name="txtSuiviCarbQte" Grid.Row="2" Grid.Column="1" Margin="0,10,0,0"/>
+                                <!-- KM -->
+                                <StackPanel Grid.Row="2" Grid.Column="0" Margin="0,0,0,8">
+                                    <TextBlock Text="KILOMÉTRAGE" Style="{StaticResource FieldLabel}"/>
+                                    <TextBox x:Name="txtSuiviKm" Style="{StaticResource DarkInput}"/>
+                                </StackPanel>
 
-                            <TextBlock Grid.Row="3" Text="Carburant (prix)" Foreground="#555" Margin="0,10,0,0"/>
-                            <TextBox x:Name="txtSuiviCarbPrix" Grid.Row="3" Grid.Column="1" Margin="0,10,0,0"/>
+                                <!-- Carburant Qté -->
+                                <StackPanel Grid.Row="2" Grid.Column="2" Margin="0,0,0,8">
+                                    <TextBlock Text="CARBURANT (L)" Style="{StaticResource FieldLabel}"/>
+                                    <TextBox x:Name="txtSuiviCarbQte" Style="{StaticResource DarkInput}"/>
+                                </StackPanel>
 
-                            <TextBlock Grid.Row="4" Text="Péages (frais)" Foreground="#555" Margin="0,10,0,0"/>
-                            <TextBox x:Name="txtSuiviPeage" Grid.Row="4" Grid.Column="1" Margin="0,10,0,0"/>
-                        </Grid>
-                    </GroupBox>
+                                <!-- Carburant Prix -->
+                                <StackPanel Grid.Row="3" Grid.Column="0" Margin="0,0,0,8">
+                                    <TextBlock Text="COÛT CARBURANT (€)" Style="{StaticResource FieldLabel}"/>
+                                    <TextBox x:Name="txtSuiviCarbPrix" Style="{StaticResource DarkInput}"/>
+                                </StackPanel>
 
-                    <Button Grid.Row="4" Content="Enregistrer le suivi du jour" Click="BtnEnregistrerSuivi_Click"
-                            Style="{StaticResource PrimaryButton}" Margin="0,12,0,0"/>
+                                <!-- Péage -->
+                                <StackPanel Grid.Row="3" Grid.Column="2" Margin="0,0,0,8">
+                                    <TextBlock Text="PÉAGES (€)" Style="{StaticResource FieldLabel}"/>
+                                    <TextBox x:Name="txtSuiviPeage" Style="{StaticResource DarkInput}"/>
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Bouton enregistrer -->
+                    <Border Grid.Row="4" Background="#192236" CornerRadius="0,0,14,14" Padding="16,12">
+                        <Button Content="💾  Enregistrer le suivi du jour"
+                                Click="BtnEnregistrerSuivi_Click"
+                                Style="{StaticResource DarkActionBtn}"
+                                Background="#3D8EF0"
+                                HorizontalAlignment="Stretch"/>
+                    </Border>
                 </Grid>
             </Border>
         </Grid>
 
-        <!-- Pied -->
-        <Border Grid.Row="2" Background="#E8ECF0" CornerRadius="12" Padding="12">
-            <TextBlock x:Name="txtVehiculesFooter" Text="" Foreground="{StaticResource Brush.TextMuted}"/>
+        <!-- ═══ PIED ═══ -->
+        <Border Grid.Row="2" Background="#141D2E"
+                BorderThickness="0,1,0,0" BorderBrush="#1F2E45"
+                Padding="24,10">
+            <TextBlock x:Name="txtVehiculesFooter"
+                       Text=""
+                       FontSize="11" Foreground="#6B7FA8"/>
         </Border>
     </Grid>
 </Window>

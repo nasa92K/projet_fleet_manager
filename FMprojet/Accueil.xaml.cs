@@ -7,6 +7,7 @@ using LiveChartsCore.SkiaSharpView.Painting;
 using SkiaSharp;
 using System.Linq;
 using System.Windows;
+using System.Windows.Media;
 
 namespace FMprojet.Views
 {
@@ -35,19 +36,19 @@ namespace FMprojet.Views
                 {
                     case "super_admin":
                         roleAffiche = "Super Administrateur";
-                        txtRole.Foreground = new System.Windows.Media.SolidColorBrush(
-                            System.Windows.Media.Color.FromRgb(142, 68, 173));
+                        txtRole.Foreground = new SolidColorBrush(Color.FromRgb(155, 114, 242)); // purple
+                        txtSoustitre.Text = "Vue d'ensemble complète · Super Admin";
                         break;
                     case "admin":
                         roleAffiche = "Administrateur";
-                        txtRole.Foreground = new System.Windows.Media.SolidColorBrush(
-                            System.Windows.Media.Color.FromRgb(52, 152, 219));
+                        txtRole.Foreground = new SolidColorBrush(Color.FromRgb(61, 142, 240)); // blue
+                        txtSoustitre.Text = "Vue d'ensemble de votre flotte";
                         break;
                     case "utilisateur":
                     case "client":
                         roleAffiche = "Utilisateur";
-                        txtRole.Foreground = new System.Windows.Media.SolidColorBrush(
-                            System.Windows.Media.Color.FromRgb(39, 174, 96));
+                        txtRole.Foreground = new SolidColorBrush(Color.FromRgb(27, 197, 189)); // teal
+                        txtSoustitre.Text = "Bienvenue sur Fleet Manager";
                         break;
                     default:
                         roleAffiche = "Utilisateur";
@@ -67,26 +68,34 @@ namespace FMprojet.Views
 
         private void AfficherMenusSelonRole(string role)
         {
-            grpSuperAdmin.Visibility = Visibility.Collapsed;
-            grpAdmin.Visibility = Visibility.Collapsed;
-            grpUtilisateur.Visibility = Visibility.Collapsed;
+            // Cacher tout
+            secSuperAdmin.Visibility    = Visibility.Collapsed;
+            secAdmin.Visibility         = Visibility.Collapsed;
+            secUtilisateur.Visibility   = Visibility.Collapsed;
+            panneauAdmin.Visibility     = Visibility.Collapsed;
+            panneauSuperAdmin.Visibility = Visibility.Collapsed;
+            panneauUtilisateur.Visibility = Visibility.Collapsed;
 
             switch (role)
             {
                 case "super_admin":
-                    grpSuperAdmin.Visibility = Visibility.Visible;
-                    grpAdmin.Visibility = Visibility.Visible;
-                    grpUtilisateur.Visibility = Visibility.Visible;
+                    secSuperAdmin.Visibility     = Visibility.Visible;
+                    secAdmin.Visibility          = Visibility.Visible;
+                    secUtilisateur.Visibility    = Visibility.Visible;
+                    panneauAdmin.Visibility      = Visibility.Visible;
+                    panneauSuperAdmin.Visibility = Visibility.Visible;
                     ChargerCompteursDashboard();
                     break;
                 case "admin":
-                    grpAdmin.Visibility = Visibility.Visible;
-                    grpUtilisateur.Visibility = Visibility.Visible;
+                    secAdmin.Visibility        = Visibility.Visible;
+                    secUtilisateur.Visibility  = Visibility.Visible;
+                    panneauAdmin.Visibility    = Visibility.Visible;
                     ChargerCompteursDashboard();
                     break;
                 case "utilisateur":
                 case "client":
-                    grpUtilisateur.Visibility = Visibility.Visible;
+                    secUtilisateur.Visibility    = Visibility.Visible;
+                    panneauUtilisateur.Visibility = Visibility.Visible;
                     break;
             }
         }
@@ -94,20 +103,30 @@ namespace FMprojet.Views
         private void ChargerCompteursDashboard()
         {
             int nbVehicules = 0;
-            int nbAttente = 0;
+            int nbAttente   = 0;
+            int nbTotal     = 0;
+            int nbUsers     = 0;
 
             try
             {
                 nbVehicules = _dbManager.CompterVehiculesDisponibles();
                 nbAttente   = _dbManager.CompterCommandesEnAttente();
+
+                // Compteurs optionnels (ignorés si la méthode n'existe pas encore)
+                try { nbTotal = _dbManager.CompterToutesCommandes(); }   catch { }
+                try { nbUsers = _dbManager.CompterUtilisateurs(); }       catch { }
             }
             catch (System.Exception ex)
             {
-                MessageBox.Show($"Erreur lors du chargement du dashboard : {ex.Message}", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(
+                    $"Erreur lors du chargement du dashboard : {ex.Message}",
+                    "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
             txtNbVehicules.Text           = nbVehicules.ToString();
             txtNbCommandesEnAttente.Text  = nbAttente.ToString();
+            txtNbCommandesTotal.Text      = nbTotal > 0 ? nbTotal.ToString() : "—";
+            txtNbUtilisateurs.Text        = nbUsers > 0 ? nbUsers.ToString() : "—";
 
             ChargerGraphiqueCouts();
             ChargerGraphiqueCategories();
@@ -121,9 +140,11 @@ namespace FMprojet.Views
             {
                 var points = _dbManager.ObtenirCoutsParJourDerniersJours(30);
                 if (txtDashChartInfo != null)
-                    txtDashChartInfo.Text = points.Count == 0 ? "Aucune donnée de coût (ajoute des événements avec un coût dans le suivi véhicule)." : "";
+                    txtDashChartInfo.Text = points.Count == 0
+                        ? "Aucune donnée de coût disponible"
+                        : "30 derniers jours";
 
-                var labels = points.Select(p => p.Jour.ToString("dd/MM")).ToArray();
+                var labels  = points.Select(p => p.Jour.ToString("dd/MM")).ToArray();
                 var valeurs = points.Select(p => (double)p.CoutTotal).ToArray();
 
                 chartCouts.Series = new ISeries[]
@@ -131,7 +152,10 @@ namespace FMprojet.Views
                     new ColumnSeries<double>
                     {
                         Values = valeurs,
-                        Name = "Coûts"
+                        Name   = "Coûts",
+                        Fill   = new SolidColorPaint(new SKColor(61, 142, 240, 200)),
+                        Stroke = null,
+                        MaxBarWidth = 20
                     }
                 };
 
@@ -139,10 +163,11 @@ namespace FMprojet.Views
                 {
                     new Axis
                     {
-                        Labels = labels,
+                        Labels         = labels,
                         LabelsRotation = 0,
-                        TextSize = 11,
-                        SeparatorsPaint = new SolidColorPaint(new SKColor(230, 235, 240))
+                        TextSize       = 10,
+                        LabelsPaint    = new SolidColorPaint(new SKColor(107, 127, 168)),
+                        SeparatorsPaint = new SolidColorPaint(new SKColor(31, 46, 69))
                     }
                 };
 
@@ -150,16 +175,20 @@ namespace FMprojet.Views
                 {
                     new Axis
                     {
-                        Labeler = value => value.ToString("0"),
-                        TextSize = 11,
-                        SeparatorsPaint = new SolidColorPaint(new SKColor(230, 235, 240))
+                        Labeler         = value => value.ToString("0"),
+                        TextSize        = 10,
+                        LabelsPaint     = new SolidColorPaint(new SKColor(107, 127, 168)),
+                        SeparatorsPaint = new SolidColorPaint(new SKColor(31, 46, 69))
                     }
                 };
             }
             catch (System.Exception ex)
             {
-                if (txtDashChartInfo != null) txtDashChartInfo.Text = "Erreur lors du chargement du graphique.";
-                MessageBox.Show($"Erreur graphique : {ex.Message}", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+                if (txtDashChartInfo != null)
+                    txtDashChartInfo.Text = "Erreur lors du chargement du graphique.";
+                MessageBox.Show(
+                    $"Erreur graphique : {ex.Message}",
+                    "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -171,28 +200,34 @@ namespace FMprojet.Views
             {
                 var cats = _dbManager.ObtenirDepensesFlotteParCategorie(30);
                 if (txtDashCatInfo != null)
-                    txtDashCatInfo.Text = cats.All(c => c.Total <= 0) ? "Aucune dépense saisie sur 30 jours (via le suivi journalier véhicule)." : "";
+                    txtDashCatInfo.Text = cats.All(c => c.Total <= 0)
+                        ? "Aucune dépense saisie sur 30 jours"
+                        : "30 derniers jours";
 
                 chartCategories.Series = cats
                     .Where(c => c.Total > 0)
                     .Select(c => new PieSeries<decimal>
                     {
-                        Values = new[] { c.Total },
-                        Name = c.Categorie,
-                        DataLabelsSize = 12,
-                        DataLabelsPaint = new SolidColorPaint(SKColors.White),
-                        DataLabelsPosition = LiveChartsCore.Measure.PolarLabelsPosition.Middle
+                        Values              = new[] { c.Total },
+                        Name                = c.Categorie,
+                        DataLabelsSize      = 11,
+                        DataLabelsPaint     = new SolidColorPaint(SKColors.White),
+                        DataLabelsPosition  = LiveChartsCore.Measure.PolarLabelsPosition.Middle
                     })
                     .Cast<ISeries>()
                     .ToArray();
             }
             catch (System.Exception ex)
             {
-                if (txtDashCatInfo != null) txtDashCatInfo.Text = "Erreur lors du chargement des catégories.";
-                MessageBox.Show($"Erreur graphique catégories : {ex.Message}", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+                if (txtDashCatInfo != null)
+                    txtDashCatInfo.Text = "Erreur lors du chargement des catégories.";
+                MessageBox.Show(
+                    $"Erreur graphique catégories : {ex.Message}",
+                    "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
+        // ─── Déconnexion ──────────────────────────────────────────────
         private void BtnDeconnexion_Click(object sender, RoutedEventArgs e)
         {
             var result = MessageBox.Show(

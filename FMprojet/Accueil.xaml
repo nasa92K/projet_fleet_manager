@@ -3,34 +3,56 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
         Title="Accueil - Fleet Manager"
-        Height="600" 
-        Width="900"
+        Height="680"
+        Width="1050"
+        MinHeight="600"
+        MinWidth="900"
         WindowStartupLocation="CenterScreen"
-        Background="#F0F2F5">
+        Background="#0F1623">
+
     <Window.Resources>
-        <!-- Style bouton de navigation standard -->
-        <Style x:Key="NavButton" TargetType="Button">
-            <Setter Property="Foreground" Value="White"/>
+
+        <!-- ── Couleurs de fond ── -->
+        <SolidColorBrush x:Key="BgDark"       Color="#0F1623"/>
+        <SolidColorBrush x:Key="BgSidebar"    Color="#141D2E"/>
+        <SolidColorBrush x:Key="BgCard"       Color="#1C2740"/>
+        <SolidColorBrush x:Key="BgCardHover"  Color="#232F4A"/>
+        <SolidColorBrush x:Key="AccentBlue"   Color="#3D8EF0"/>
+        <SolidColorBrush x:Key="AccentTeal"   Color="#1BC5BD"/>
+        <SolidColorBrush x:Key="AccentOrange" Color="#F4A535"/>
+        <SolidColorBrush x:Key="AccentPurple" Color="#9B72F2"/>
+        <SolidColorBrush x:Key="AccentRed"    Color="#E05C5C"/>
+        <SolidColorBrush x:Key="TextPrimary"  Color="#EDF1FA"/>
+        <SolidColorBrush x:Key="TextMuted"    Color="#6B7FA8"/>
+        <SolidColorBrush x:Key="Separator"    Color="#1F2E45"/>
+
+        <!-- ── Style bouton sidebar ── -->
+        <Style x:Key="SidebarBtn" TargetType="Button">
+            <Setter Property="Foreground" Value="#A0B4D0"/>
+            <Setter Property="Background" Value="Transparent"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="FontSize" Value="13"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="Padding" Value="15,10"/>
-            <Setter Property="Margin" Value="0,5"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Padding" Value="18,11"/>
+            <Setter Property="Margin" Value="8,2"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}"
-                                CornerRadius="8"
+                        <Border x:Name="bd"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="10"
                                 Padding="{TemplateBinding Padding}">
                             <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Opacity" Value="0.85"/>
+                                <Setter TargetName="bd" Property="Background" Value="#1F2E45"/>
+                                <Setter Property="Foreground" Value="#EDF1FA"/>
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
-                                <Setter Property="Opacity" Value="0.7"/>
+                                <Setter TargetName="bd" Property="Background" Value="#243452"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -38,247 +60,649 @@
             </Setter>
         </Style>
 
-        <!-- Style carte stat -->
+        <!-- ── Style bouton sidebar actif ── -->
+        <Style x:Key="SidebarBtnActive" TargetType="Button" BasedOn="{StaticResource SidebarBtn}">
+            <Setter Property="Foreground" Value="#EDF1FA"/>
+            <Setter Property="Background" Value="#1F2E45"/>
+        </Style>
+
+        <!-- ── Stat card border ── -->
         <Style x:Key="StatCard" TargetType="Border">
-            <Setter Property="Background" Value="White"/>
-            <Setter Property="CornerRadius" Value="12"/>
-            <Setter Property="Padding" Value="20,15"/>
+            <Setter Property="Background" Value="#1C2740"/>
+            <Setter Property="CornerRadius" Value="14"/>
+            <Setter Property="Padding" Value="22,18"/>
             <Setter Property="Margin" Value="0,0,12,0"/>
             <Setter Property="Effect">
                 <Setter.Value>
-                    <DropShadowEffect BlurRadius="8" ShadowDepth="2" Opacity="0.12" Color="#000000"/>
+                    <DropShadowEffect BlurRadius="16" ShadowDepth="4" Opacity="0.25" Color="#000000"/>
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <!-- ── Séparateur sidebar ── -->
+        <Style x:Key="SidebarSep" TargetType="Separator">
+            <Setter Property="Background" Value="#1F2E45"/>
+            <Setter Property="Margin" Value="16,8"/>
+            <Setter Property="Height" Value="1"/>
+        </Style>
+
+        <!-- ── Label catégorie sidebar ── -->
+        <Style x:Key="SidebarCat" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#3D5070"/>
+            <Setter Property="FontSize" Value="10"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Margin" Value="26,12,0,4"/>
+            <Setter Property="Text" Value="SECTION"/>
+        </Style>
+
     </Window.Resources>
 
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <!-- Sidebar fixe -->
+            <ColumnDefinition Width="220"/>
+            <!-- Contenu principal -->
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
 
-        <!-- En-tête -->
-        <Border Grid.Row="0" Background="#1A2332" Padding="24,18">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
+        <!-- ═══════════════════════════════════════ -->
+        <!--   SIDEBAR                               -->
+        <!-- ═══════════════════════════════════════ -->
+        <Border Grid.Column="0" Background="#141D2E">
+            <DockPanel>
 
-                <StackPanel Grid.Column="0">
-                    <TextBlock x:Name="txtBienvenue" 
-                              Text="Bienvenue,"
-                              FontSize="13"
-                              Foreground="#8FA3B8"/>
-                    <TextBlock x:Name="txtNomUtilisateur" 
-                              Text="Utilisateur" 
-                              FontSize="22" 
-                              FontWeight="Bold"
-                              Foreground="White"
-                              Margin="0,2,0,0"/>
-                    <TextBlock x:Name="txtRole" 
-                              Text="Rôle" 
-                              FontSize="13" 
-                              Foreground="#8FA3B8" 
-                              Margin="0,4,0,0"/>
-                </StackPanel>
+                <!-- Logo + app name -->
+                <Border DockPanel.Dock="Top" Padding="22,26,22,20">
+                    <StackPanel Orientation="Horizontal">
+                        <Border Width="36" Height="36" CornerRadius="10"
+                                Background="#3D8EF0">
+                            <TextBlock Text="FM" FontSize="14" FontWeight="Bold"
+                                       Foreground="White"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"/>
+                        </Border>
+                        <StackPanel Margin="10,0,0,0" VerticalAlignment="Center">
+                            <TextBlock Text="Fleet Manager"
+                                       FontSize="14" FontWeight="Bold"
+                                       Foreground="#EDF1FA"/>
+                            <TextBlock Text="Gestion de flotte"
+                                       FontSize="10"
+                                       Foreground="#3D5070"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
 
-                <Button x:Name="btnChangerCompte" 
-                       Grid.Column="1" 
-                       Content="🔄  Changer de compte" 
-                       Padding="15,8" 
-                       Background="#E74C3C" 
-                       Foreground="White" 
-                       BorderThickness="0"
-                       Cursor="Hand"
-                       FontSize="13"
-                       Click="BtnDeconnexion_Click">
-                    <Button.Template>
-                        <ControlTemplate TargetType="Button">
-                            <Border Background="{TemplateBinding Background}"
-                                    CornerRadius="8"
-                                    Padding="{TemplateBinding Padding}">
-                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <Separator Style="{StaticResource SidebarSep}" DockPanel.Dock="Top"/>
+
+                <!-- Profil utilisateur compact -->
+                <Border DockPanel.Dock="Top" Padding="16,10,16,14">
+                    <Border Background="#1C2740" CornerRadius="12" Padding="12,10">
+                        <StackPanel>
+                            <TextBlock x:Name="txtBienvenue"
+                                       Text="Bienvenue,"
+                                       FontSize="10"
+                                       Foreground="#3D5070"/>
+                            <TextBlock x:Name="txtNomUtilisateur"
+                                       Text="Utilisateur"
+                                       FontSize="14"
+                                       FontWeight="Bold"
+                                       Foreground="#EDF1FA"
+                                       Margin="0,2,0,0"
+                                       TextTrimming="CharacterEllipsis"/>
+                            <Border x:Name="badgeRole"
+                                    Background="#1F2E45"
+                                    CornerRadius="6"
+                                    Padding="8,3"
+                                    Margin="0,6,0,0"
+                                    HorizontalAlignment="Left">
+                                <TextBlock x:Name="txtRole"
+                                           Text="Rôle"
+                                           FontSize="10"
+                                           FontWeight="SemiBold"
+                                           Foreground="#3D8EF0"/>
                             </Border>
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="#C0392B"/>
-                                </Trigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Button.Template>
-                </Button>
-            </Grid>
+                        </StackPanel>
+                    </Border>
+                </Border>
+
+                <Separator Style="{StaticResource SidebarSep}" DockPanel.Dock="Top"/>
+
+                <!-- Navigation scroll -->
+                <ScrollViewer DockPanel.Dock="Top" VerticalScrollBarVisibility="Auto"
+                              Margin="0,0,0,0">
+                    <StackPanel x:Name="panneauNav" Margin="0,4,0,0">
+
+                        <!-- ── SUPER ADMIN ── -->
+                        <StackPanel x:Name="secSuperAdmin" Visibility="Collapsed">
+                            <TextBlock Style="{StaticResource SidebarCat}" Text="SUPER ADMIN"/>
+                            <Button x:Name="btnNavAdmins"
+                                    Style="{StaticResource SidebarBtn}"
+                                    Click="BtnGererAdministrateurs_Click">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="👑" FontSize="15" VerticalAlignment="Center"/>
+                                    <TextBlock Text="  Gérer les admins" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button x:Name="btnNavStats"
+                                    Style="{StaticResource SidebarBtn}"
+                                    Click="BtnStatistiques_Click">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="📊" FontSize="15" VerticalAlignment="Center"/>
+                                    <TextBlock Text="  Statistiques" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Separator Style="{StaticResource SidebarSep}"/>
+                        </StackPanel>
+
+                        <!-- ── ADMIN ── -->
+                        <StackPanel x:Name="secAdmin" Visibility="Collapsed">
+                            <TextBlock Style="{StaticResource SidebarCat}" Text="ADMINISTRATION"/>
+                            <Button x:Name="btnNavUtilisateurs"
+                                    Style="{StaticResource SidebarBtn}"
+                                    Click="BtnGererUtilisateurs_Click">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="👥" FontSize="15" VerticalAlignment="Center"/>
+                                    <TextBlock Text="  Utilisateurs" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button x:Name="btnNavVehicules"
+                                    Style="{StaticResource SidebarBtn}"
+                                    Click="BtnGererVehicules_Click">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="🚗" FontSize="15" VerticalAlignment="Center"/>
+                                    <TextBlock Text="  Véhicules" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Button x:Name="btnNavCommandes"
+                                    Style="{StaticResource SidebarBtn}"
+                                    Click="BtnGererCommandes_Click">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="📋" FontSize="15" VerticalAlignment="Center"/>
+                                    <TextBlock Text="  Commandes" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                            <Separator Style="{StaticResource SidebarSep}"/>
+                        </StackPanel>
+
+                        <!-- ── UTILISATEUR ── -->
+                        <StackPanel x:Name="secUtilisateur" Visibility="Collapsed">
+                            <TextBlock Style="{StaticResource SidebarCat}" Text="MES ACCÈS"/>
+                            <Button x:Name="btnNavVoirVehicules"
+                                    Style="{StaticResource SidebarBtn}"
+                                    Click="BtnVoirVehicules_Click">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="🚗" FontSize="15" VerticalAlignment="Center"/>
+                                    <TextBlock Text="  Voir les véhicules" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+
+                    </StackPanel>
+                </ScrollViewer>
+
+                <!-- Bouton déconnexion en bas -->
+                <Border DockPanel.Dock="Bottom" Padding="16,14">
+                    <Button x:Name="btnChangerCompte"
+                            Click="BtnDeconnexion_Click"
+                            Cursor="Hand"
+                            BorderThickness="0">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="bd" Background="#1C1A2E" CornerRadius="10" Padding="14,10">
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                        <TextBlock Text="🔄" FontSize="14" VerticalAlignment="Center"/>
+                                        <TextBlock Text="  Changer de compte"
+                                                   FontSize="12"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="#E05C5C"
+                                                   VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="bd" Property="Background" Value="#2A1F35"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                </Border>
+
+                <!-- Footer version -->
+                <Border DockPanel.Dock="Bottom" Padding="0,0,0,0">
+                    <TextBlock Text="v1.0.0 · Fleet Manager"
+                               FontSize="10"
+                               Foreground="#3D5070"
+                               HorizontalAlignment="Center"
+                               Margin="0,0,0,6"/>
+                </Border>
+
+            </DockPanel>
         </Border>
 
-        <!-- Contenu principal -->
-        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="24,20">
-            <StackPanel>
+        <!-- ═══════════════════════════════════════ -->
+        <!--   CONTENU PRINCIPAL                     -->
+        <!-- ═══════════════════════════════════════ -->
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <!-- Topbar -->
+                <RowDefinition Height="64"/>
+                <!-- Dashboard body -->
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
 
-                <!-- ═══════════════════════════════════════ -->
-                <!--   MENU SUPER ADMIN                      -->
-                <!-- ═══════════════════════════════════════ -->
-                <GroupBox x:Name="grpSuperAdmin" 
-                         Header="☰  Menu Super Administrateur" 
-                         Margin="0,0,0,20"
-                         Padding="15"
-                         Visibility="Collapsed">
-                    <GroupBox.HeaderTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding}" FontSize="14" FontWeight="Bold" Foreground="#8E44AD"/>
-                        </DataTemplate>
-                    </GroupBox.HeaderTemplate>
-                    <StackPanel>
-                        <Button Content="👑  Gérer les administrateurs" 
-                                Style="{StaticResource NavButton}"
-                                Background="#8E44AD"
-                                Click="BtnGererAdministrateurs_Click"/>
-                        <Button Content="👥  Gérer les utilisateurs" 
-                                Style="{StaticResource NavButton}"
-                                Background="#3498DB"
-                                Click="BtnGererUtilisateurs_Click"/>
-                        <Button Content="🚗  Gérer les véhicules" 
-                                Style="{StaticResource NavButton}"
-                                Background="#16A085"
-                                Click="BtnGererVehicules_Click"/>
-                        <Button Content="📋  Gérer les commandes" 
-                                Style="{StaticResource NavButton}"
-                                Background="#F39C12"
-                                Click="BtnGererCommandes_Click"/>
-                        <Button Content="📊  Statistiques et rapports" 
-                                Style="{StaticResource NavButton}"
-                                Background="#34495E"
-                                Click="BtnStatistiques_Click"/>
+            <!-- ── Topbar ── -->
+            <Border Grid.Row="0" Background="#141D2E"
+                    BorderThickness="0,0,0,1"
+                    BorderBrush="#1F2E45">
+                <Grid Margin="28,0">
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="Tableau de bord"
+                                   FontSize="18"
+                                   FontWeight="Bold"
+                                   Foreground="#EDF1FA"/>
+                        <TextBlock x:Name="txtSoustitre"
+                                   Text="Vue d'ensemble de votre flotte"
+                                   FontSize="12"
+                                   Foreground="#6B7FA8"
+                                   Margin="0,2,0,0"/>
                     </StackPanel>
-                </GroupBox>
+                </Grid>
+            </Border>
 
-                <!-- ═══════════════════════════════════════ -->
-                <!--   MENU ADMIN — Dashboard avec compteurs  -->
-                <!-- ═══════════════════════════════════════ -->
-                <GroupBox x:Name="grpAdmin" 
-                         Header="☰  Tableau de bord Administrateur" 
-                         Margin="0,0,0,20"
-                         Padding="15"
-                         Visibility="Collapsed">
-                    <GroupBox.HeaderTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding}" FontSize="14" FontWeight="Bold" Foreground="#2980B9"/>
-                        </DataTemplate>
-                    </GroupBox.HeaderTemplate>
-                    <StackPanel>
-                        <!-- Cartes stat -->
-                        <Grid Margin="0,0,0,18">
+            <!-- ── Corps ── -->
+            <ScrollViewer Grid.Row="1"
+                          VerticalScrollBarVisibility="Auto"
+                          Background="#0F1623">
+                <StackPanel Margin="28,24,28,24">
+
+                    <!-- ─────────────────────────────── -->
+                    <!-- SECTION ADMIN : Cartes + Charts -->
+                    <!-- ─────────────────────────────── -->
+                    <StackPanel x:Name="panneauAdmin" Visibility="Collapsed">
+
+                        <!-- Cartes KPI -->
+                        <Grid Margin="0,0,0,20">
                             <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
 
-                            <!-- Carte Véhicules -->
-                            <Border Grid.Column="0" Style="{StaticResource StatCard}">
-                                <StackPanel>
-                                    <TextBlock Text="🚗" FontSize="28" Margin="0,0,0,6"/>
-                                    <TextBlock x:Name="txtNbVehicules"
+                            <!-- Véhicules -->
+                            <Border Grid.Column="0" Style="{StaticResource StatCard}" Margin="0,0,12,0">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <Border Grid.Row="0" Width="38" Height="38"
+                                            CornerRadius="10" Background="#1E3A5F"
+                                            HorizontalAlignment="Left" Margin="0,0,0,12">
+                                        <TextBlock Text="🚗" FontSize="18"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center"/>
+                                    </Border>
+                                    <TextBlock x:Name="txtNbVehicules" Grid.Row="1"
                                                Text="—"
-                                               FontSize="32"
-                                               FontWeight="Bold"
-                                               Foreground="#16A085"/>
-                                    <TextBlock Text="Véhicules au total"
+                                               FontSize="34" FontWeight="Bold"
+                                               Foreground="#3D8EF0"/>
+                                    <TextBlock Grid.Row="2"
+                                               Text="Véhicules"
                                                FontSize="12"
-                                               Foreground="#7F8C8D"
-                                               Margin="0,4,0,0"/>
-                                </StackPanel>
+                                               Foreground="#6B7FA8"
+                                               Margin="0,6,0,0"/>
+                                </Grid>
                             </Border>
 
-                            <!-- Carte Commandes en attente -->
-                            <Border Grid.Column="1" Style="{StaticResource StatCard}" Margin="12,0,0,0">
-                                <StackPanel>
-                                    <TextBlock Text="⏳" FontSize="28" Margin="0,0,0,6"/>
-                                    <TextBlock x:Name="txtNbCommandesEnAttente"
+                            <!-- Commandes en attente -->
+                            <Border Grid.Column="1" Style="{StaticResource StatCard}" Margin="0,0,12,0">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <Border Grid.Row="0" Width="38" Height="38"
+                                            CornerRadius="10" Background="#3A2A10"
+                                            HorizontalAlignment="Left" Margin="0,0,0,12">
+                                        <TextBlock Text="⏳" FontSize="18"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center"/>
+                                    </Border>
+                                    <TextBlock x:Name="txtNbCommandesEnAttente" Grid.Row="1"
                                                Text="—"
-                                               FontSize="32"
-                                               FontWeight="Bold"
-                                               Foreground="#E67E22"/>
-                                    <TextBlock Text="Commandes en attente"
+                                               FontSize="34" FontWeight="Bold"
+                                               Foreground="#F4A535"/>
+                                    <TextBlock Grid.Row="2"
+                                               Text="En attente"
                                                FontSize="12"
-                                               Foreground="#7F8C8D"
-                                               Margin="0,4,0,0"/>
-                                </StackPanel>
+                                               Foreground="#6B7FA8"
+                                               Margin="0,6,0,0"/>
+                                </Grid>
+                            </Border>
+
+                            <!-- Utilisateurs -->
+                            <Border Grid.Column="2" Style="{StaticResource StatCard}" Margin="0,0,12,0">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <Border Grid.Row="0" Width="38" Height="38"
+                                            CornerRadius="10" Background="#1B3030"
+                                            HorizontalAlignment="Left" Margin="0,0,0,12">
+                                        <TextBlock Text="👥" FontSize="18"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center"/>
+                                    </Border>
+                                    <TextBlock x:Name="txtNbUtilisateurs" Grid.Row="1"
+                                               Text="—"
+                                               FontSize="34" FontWeight="Bold"
+                                               Foreground="#1BC5BD"/>
+                                    <TextBlock Grid.Row="2"
+                                               Text="Utilisateurs"
+                                               FontSize="12"
+                                               Foreground="#6B7FA8"
+                                               Margin="0,6,0,0"/>
+                                </Grid>
+                            </Border>
+
+                            <!-- Commandes totales -->
+                            <Border Grid.Column="3" Style="{StaticResource StatCard}" Margin="0">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <Border Grid.Row="0" Width="38" Height="38"
+                                            CornerRadius="10" Background="#2A1F45"
+                                            HorizontalAlignment="Left" Margin="0,0,0,12">
+                                        <TextBlock Text="📋" FontSize="18"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center"/>
+                                    </Border>
+                                    <TextBlock x:Name="txtNbCommandesTotal" Grid.Row="1"
+                                               Text="—"
+                                               FontSize="34" FontWeight="Bold"
+                                               Foreground="#9B72F2"/>
+                                    <TextBlock Grid.Row="2"
+                                               Text="Commandes"
+                                               FontSize="12"
+                                               Foreground="#6B7FA8"
+                                               Margin="0,6,0,0"/>
+                                </Grid>
                             </Border>
                         </Grid>
 
                         <!-- Graphiques -->
-                        <Grid Margin="0,0,0,18">
+                        <Grid Margin="0,0,0,20">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="12"/>
+                                <ColumnDefinition Width="16"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
 
-                            <Border Grid.Column="0" Background="White" CornerRadius="10" Padding="12">
+                            <!-- Graphique Coûts -->
+                            <Border Grid.Column="0"
+                                    Background="#1C2740"
+                                    CornerRadius="14"
+                                    Padding="18,16">
+                                <Border.Effect>
+                                    <DropShadowEffect BlurRadius="16" ShadowDepth="4" Opacity="0.2" Color="#000000"/>
+                                </Border.Effect>
                                 <StackPanel>
-                                    <TextBlock Text="Évolution des coûts (30 derniers jours)" FontWeight="SemiBold" Foreground="#1A2332"/>
-                                    <TextBlock x:Name="txtDashChartInfo" Text="" FontSize="11" Foreground="#95A5A6" Margin="0,2,0,8"/>
-                                    <lvc:CartesianChart x:Name="chartCouts" Height="220"/>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                                        <TextBlock Text="📈" FontSize="16" VerticalAlignment="Center"/>
+                                        <TextBlock Text="  Évolution des coûts"
+                                                   FontSize="13" FontWeight="SemiBold"
+                                                   Foreground="#EDF1FA"
+                                                   VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                    <TextBlock x:Name="txtDashChartInfo"
+                                               Text="30 derniers jours"
+                                               FontSize="11"
+                                               Foreground="#6B7FA8"
+                                               Margin="0,0,0,10"/>
+                                    <lvc:CartesianChart x:Name="chartCouts" Height="200"/>
                                 </StackPanel>
                             </Border>
 
-                            <Border Grid.Column="2" Background="White" CornerRadius="10" Padding="12">
+                            <!-- Graphique Catégories -->
+                            <Border Grid.Column="2"
+                                    Background="#1C2740"
+                                    CornerRadius="14"
+                                    Padding="18,16">
+                                <Border.Effect>
+                                    <DropShadowEffect BlurRadius="16" ShadowDepth="4" Opacity="0.2" Color="#000000"/>
+                                </Border.Effect>
                                 <StackPanel>
-                                    <TextBlock Text="Dépenses flotte par catégorie (30 jours)" FontWeight="SemiBold" Foreground="#1A2332"/>
-                                    <TextBlock x:Name="txtDashCatInfo" Text="" FontSize="11" Foreground="#95A5A6" Margin="0,2,0,8"/>
-                                    <lvc:PieChart x:Name="chartCategories" Height="220"/>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                                        <TextBlock Text="🍩" FontSize="16" VerticalAlignment="Center"/>
+                                        <TextBlock Text="  Dépenses par catégorie"
+                                                   FontSize="13" FontWeight="SemiBold"
+                                                   Foreground="#EDF1FA"
+                                                   VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                    <TextBlock x:Name="txtDashCatInfo"
+                                               Text="30 derniers jours"
+                                               FontSize="11"
+                                               Foreground="#6B7FA8"
+                                               Margin="0,0,0,10"/>
+                                    <lvc:PieChart x:Name="chartCategories" Height="200"/>
                                 </StackPanel>
                             </Border>
                         </Grid>
 
-                        <!-- Boutons de navigation admin -->
-                        <Button Content="👥  Gérer les utilisateurs" 
-                                Style="{StaticResource NavButton}"
-                                Background="#3498DB"
-                                Click="BtnGererUtilisateurs_Click"/>
-                        <Button Content="🚗  Gérer les véhicules" 
-                                Style="{StaticResource NavButton}"
-                                Background="#16A085"
-                                Click="BtnGererVehicules_Click"/>
-                        <Button Content="📋  Gérer les commandes" 
-                                Style="{StaticResource NavButton}"
-                                Background="#F39C12"
-                                Click="BtnGererCommandes_Click"/>
+                        <!-- Actions rapides Admin -->
+                        <Border Background="#1C2740" CornerRadius="14" Padding="20,16" Margin="0,0,0,0">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="16" ShadowDepth="4" Opacity="0.2" Color="#000000"/>
+                            </Border.Effect>
+                            <StackPanel>
+                                <TextBlock Text="Actions rapides"
+                                           FontSize="13" FontWeight="SemiBold"
+                                           Foreground="#EDF1FA"
+                                           Margin="0,0,0,14"/>
+                                <UniformGrid Columns="3" Rows="1">
+                                    <Button Margin="0,0,10,0"
+                                            Click="BtnGererUtilisateurs_Click"
+                                            Cursor="Hand" BorderThickness="0">
+                                        <Button.Template>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border x:Name="bd" Background="#1F3A5F" CornerRadius="10" Padding="14,12">
+                                                    <StackPanel HorizontalAlignment="Center">
+                                                        <TextBlock Text="👥" FontSize="22" HorizontalAlignment="Center"/>
+                                                        <TextBlock Text="Utilisateurs"
+                                                                   FontSize="12" FontWeight="SemiBold"
+                                                                   Foreground="#3D8EF0"
+                                                                   HorizontalAlignment="Center"
+                                                                   Margin="0,6,0,0"/>
+                                                    </StackPanel>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter TargetName="bd" Property="Background" Value="#264875"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Button.Template>
+                                    </Button>
+                                    <Button Margin="0,0,10,0"
+                                            Click="BtnGererVehicules_Click"
+                                            Cursor="Hand" BorderThickness="0">
+                                        <Button.Template>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border x:Name="bd" Background="#1A3530" CornerRadius="10" Padding="14,12">
+                                                    <StackPanel HorizontalAlignment="Center">
+                                                        <TextBlock Text="🚗" FontSize="22" HorizontalAlignment="Center"/>
+                                                        <TextBlock Text="Véhicules"
+                                                                   FontSize="12" FontWeight="SemiBold"
+                                                                   Foreground="#1BC5BD"
+                                                                   HorizontalAlignment="Center"
+                                                                   Margin="0,6,0,0"/>
+                                                    </StackPanel>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter TargetName="bd" Property="Background" Value="#20453E"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Button.Template>
+                                    </Button>
+                                    <Button Margin="0"
+                                            Click="BtnGererCommandes_Click"
+                                            Cursor="Hand" BorderThickness="0">
+                                        <Button.Template>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border x:Name="bd" Background="#3A2A10" CornerRadius="10" Padding="14,12">
+                                                    <StackPanel HorizontalAlignment="Center">
+                                                        <TextBlock Text="📋" FontSize="22" HorizontalAlignment="Center"/>
+                                                        <TextBlock Text="Commandes"
+                                                                   FontSize="12" FontWeight="SemiBold"
+                                                                   Foreground="#F4A535"
+                                                                   HorizontalAlignment="Center"
+                                                                   Margin="0,6,0,0"/>
+                                                    </StackPanel>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter TargetName="bd" Property="Background" Value="#4A3616"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Button.Template>
+                                    </Button>
+                                </UniformGrid>
+                            </StackPanel>
+                        </Border>
+
                     </StackPanel>
-                </GroupBox>
 
-                <!-- ═══════════════════════════════════════ -->
-                <!--   MENU UTILISATEUR                       -->
-                <!-- ═══════════════════════════════════════ -->
-                <GroupBox x:Name="grpUtilisateur" 
-                         Header="☰  Menu Utilisateur" 
-                         Margin="0,0,0,20" 
-                         Padding="15"
-                         Visibility="Collapsed">
-                    <GroupBox.HeaderTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding}" FontSize="14" FontWeight="Bold" Foreground="#27AE60"/>
-                        </DataTemplate>
-                    </GroupBox.HeaderTemplate>
-                    <StackPanel>
-                        <Button Content="🚗  Voir les véhicules" 
-                                Style="{StaticResource NavButton}"
-                                Background="#3498DB"
-                                Click="BtnVoirVehicules_Click"/>
+                    <!-- ─────────────────────────────── -->
+                    <!-- SECTION SUPER ADMIN             -->
+                    <!-- ─────────────────────────────── -->
+                    <StackPanel x:Name="panneauSuperAdmin" Visibility="Collapsed" Margin="0,20,0,0">
+                        <Border Background="#1C2740" CornerRadius="14" Padding="20,16">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="16" ShadowDepth="4" Opacity="0.2" Color="#000000"/>
+                            </Border.Effect>
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,14">
+                                    <TextBlock Text="👑" FontSize="16" VerticalAlignment="Center"/>
+                                    <TextBlock Text="  Outils Super Administrateur"
+                                               FontSize="13" FontWeight="SemiBold"
+                                               Foreground="#EDF1FA"
+                                               VerticalAlignment="Center"/>
+                                </StackPanel>
+                                <UniformGrid Columns="2" Rows="1">
+                                    <Button Margin="0,0,10,0"
+                                            Click="BtnGererAdministrateurs_Click"
+                                            Cursor="Hand" BorderThickness="0">
+                                        <Button.Template>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border x:Name="bd" Background="#2A1F45" CornerRadius="10" Padding="14,12">
+                                                    <StackPanel HorizontalAlignment="Center">
+                                                        <TextBlock Text="👑" FontSize="22" HorizontalAlignment="Center"/>
+                                                        <TextBlock Text="Gérer les admins"
+                                                                   FontSize="12" FontWeight="SemiBold"
+                                                                   Foreground="#9B72F2"
+                                                                   HorizontalAlignment="Center"
+                                                                   Margin="0,6,0,0"/>
+                                                    </StackPanel>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter TargetName="bd" Property="Background" Value="#352858"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Button.Template>
+                                    </Button>
+                                    <Button Margin="0"
+                                            Click="BtnStatistiques_Click"
+                                            Cursor="Hand" BorderThickness="0">
+                                        <Button.Template>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border x:Name="bd" Background="#1E3A5F" CornerRadius="10" Padding="14,12">
+                                                    <StackPanel HorizontalAlignment="Center">
+                                                        <TextBlock Text="📊" FontSize="22" HorizontalAlignment="Center"/>
+                                                        <TextBlock Text="Statistiques"
+                                                                   FontSize="12" FontWeight="SemiBold"
+                                                                   Foreground="#3D8EF0"
+                                                                   HorizontalAlignment="Center"
+                                                                   Margin="0,6,0,0"/>
+                                                    </StackPanel>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter TargetName="bd" Property="Background" Value="#264875"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Button.Template>
+                                    </Button>
+                                </UniformGrid>
+                            </StackPanel>
+                        </Border>
                     </StackPanel>
-                </GroupBox>
 
-            </StackPanel>
-        </ScrollViewer>
+                    <!-- ─────────────────────────────── -->
+                    <!-- SECTION UTILISATEUR             -->
+                    <!-- ─────────────────────────────── -->
+                    <StackPanel x:Name="panneauUtilisateur" Visibility="Collapsed">
+                        <!-- Message de bienvenue utilisateur -->
+                        <Border Background="#1C2740" CornerRadius="14" Padding="28,24" Margin="0,0,0,20">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="16" ShadowDepth="4" Opacity="0.2" Color="#000000"/>
+                            </Border.Effect>
+                            <StackPanel>
+                                <TextBlock Text="🚀" FontSize="40" HorizontalAlignment="Center" Margin="0,0,0,12"/>
+                                <TextBlock x:Name="txtWelcomeMessage"
+                                           Text="Bienvenue dans Fleet Manager"
+                                           FontSize="20" FontWeight="Bold"
+                                           Foreground="#EDF1FA"
+                                           HorizontalAlignment="Center"/>
+                                <TextBlock Text="Accédez aux véhicules disponibles depuis le menu ci-dessous."
+                                           FontSize="13"
+                                           Foreground="#6B7FA8"
+                                           HorizontalAlignment="Center"
+                                           Margin="0,8,0,0"
+                                           TextWrapping="Wrap"/>
+                            </StackPanel>
+                        </Border>
 
-        <!-- Pied de page -->
-        <Border Grid.Row="2" Background="#E8ECF0" Padding="12">
-            <TextBlock Text="Fleet Manager — Système de gestion de flotte" 
-                      FontSize="11" 
-                      Foreground="#95A5A6" 
-                      HorizontalAlignment="Center"/>
-        </Border>
+                        <!-- Bouton voir véhicules -->
+                        <Button Click="BtnVoirVehicules_Click"
+                                Cursor="Hand" BorderThickness="0" HorizontalAlignment="Center">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border x:Name="bd" Background="#1F3A5F" CornerRadius="12" Padding="30,14">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="🚗" FontSize="18" VerticalAlignment="Center"/>
+                                            <TextBlock Text="  Voir les véhicules disponibles"
+                                                       FontSize="14" FontWeight="SemiBold"
+                                                       Foreground="#3D8EF0"
+                                                       VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="bd" Property="Background" Value="#264875"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                    </StackPanel>
+
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
     </Grid>
 </Window>
