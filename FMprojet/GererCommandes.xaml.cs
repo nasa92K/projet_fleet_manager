@@ -6,7 +6,6 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 
 namespace FMprojet.Views
 {
@@ -26,27 +25,46 @@ namespace FMprojet.Views
         // ─── Chargement des données ───────────────────────────────────
         private void ChargerCommandes()
         {
-            _toutesLesCommandes = _dbManager.ObtenirTousLesCommandes();
-            AppliquerFiltres();
+            try
+            {
+                _toutesLesCommandes = _dbManager.ObtenirTousLesCommandes() ?? new List<Commande>();
+                AppliquerFiltres();
+            }
+            catch (Exception ex)
+            {
+                _toutesLesCommandes = new List<Commande>();
+                AppliquerFiltres();
+
+                if (txtStatutBarre != null)
+                    txtStatutBarre.Text = "Impossible de charger les commandes (base de données indisponible).";
+
+                MessageBox.Show(
+                    $"Erreur lors du chargement des commandes : {ex.Message}",
+                    "Erreur",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
         }
 
         // ─── Filtrage + tri ───────────────────────────────────────────
         private void AppliquerFiltres()
         {
+            if (!IsLoaded) return;
+
             IEnumerable<Commande> resultats = _toutesLesCommandes;
 
             // Filtre texte
-            string recherche = txtRecherche.Text?.Trim().ToLower() ?? "";
+            string recherche = txtRecherche?.Text?.Trim() ?? "";
             if (!string.IsNullOrEmpty(recherche))
             {
                 resultats = resultats.Where(c =>
-                    c.UtilisateurNom.ToLower().Contains(recherche) ||
-                    c.VehiculeMarqueModele.ToLower().Contains(recherche) ||
-                    c.Statut.ToLower().Contains(recherche));
+                    (c.UtilisateurNom?.Contains(recherche, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                    (c.VehiculeMarqueModele?.Contains(recherche, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                    (c.Statut?.Contains(recherche, StringComparison.OrdinalIgnoreCase) ?? false));
             }
 
             // Filtre date
-            if (dpFiltrDate.SelectedDate.HasValue)
+            if (dpFiltrDate?.SelectedDate != null)
             {
                 var date = dpFiltrDate.SelectedDate.Value.Date;
                 resultats = resultats.Where(c => c.DateCommande.Date == date);
@@ -62,33 +80,42 @@ namespace FMprojet.Views
             };
 
             var liste = resultats.ToList();
-            listCommandes.ItemsSource = liste;
+            if (listCommandes != null)
+                listCommandes.ItemsSource = liste;
 
             // État vide
             bool vide = liste.Count == 0;
-            panneauVide.Visibility   = vide ? Visibility.Visible : Visibility.Collapsed;
-            listCommandes.Visibility = vide ? Visibility.Collapsed : Visibility.Visible;
+            if (panneauVide != null)
+                panneauVide.Visibility = vide ? Visibility.Visible : Visibility.Collapsed;
+            
+            if (listCommandes != null)
+                listCommandes.Visibility = vide ? Visibility.Collapsed : Visibility.Visible;
 
             // Barre de statut
-            int total   = _toutesLesCommandes.Count;
+            int total = _toutesLesCommandes.Count;
             int affiches = liste.Count;
-            txtStatutBarre.Text = vide
-                ? "Aucune commande ne correspond aux critères de recherche."
-                : $"{affiches} commande(s) affichée(s) sur {total} au total  •  " +
-                  $"En attente : {_toutesLesCommandes.Count(c => c.Statut == "En attente")}  " +
-                  $"Approuvées : {_toutesLesCommandes.Count(c => c.Statut == "Approuvée")}  " +
-                  $"Refusées : {_toutesLesCommandes.Count(c => c.Statut == "Refusée")}";
+            
+            if (txtStatutBarre != null)
+            {
+                txtStatutBarre.Text = vide
+                    ? "Aucune commande ne correspond aux critères de recherche."
+                    : $"{affiches} commande(s) affichée(s) sur {total} au total  •  " +
+                      $"En attente : {_toutesLesCommandes.Count(c => c.Statut == "En attente")}  " +
+                      $"Approuvées : {_toutesLesCommandes.Count(c => c.Statut == "Approuvée")}  " +
+                      $"Refusées : {_toutesLesCommandes.Count(c => c.Statut == "Refusée")}";
+            }
 
-            txtCompteurCommandes.Text = $"{total} commande(s) au total";
+            if (txtCompteurCommandes != null)
+                txtCompteurCommandes.Text = $"{total} commande(s) au total";
         }
 
         // ─── Événements filtres ───────────────────────────────────────
-        private void Filtre_Changed(object sender, EventArgs e) => AppliquerFiltres();
+        private void Filtre_Changed(object sender, RoutedEventArgs e) => AppliquerFiltres();
 
         private void BtnReinitFiltres_Click(object sender, RoutedEventArgs e)
         {
-            txtRecherche.Text = "";
-            dpFiltrDate.SelectedDate = null;
+            if (txtRecherche != null) txtRecherche.Text = "";
+            if (dpFiltrDate != null) dpFiltrDate.SelectedDate = null;
             AppliquerFiltres();
         }
 
@@ -113,12 +140,19 @@ namespace FMprojet.Views
         {
             if (sender is Button btn && btn.Tag is int id)
             {
-                bool ok = _dbManager.MettreAJourStatutCommande(id, "Approuvée");
-                if (ok)
+                try
                 {
-                    MessageBox.Show("Commande approuvée avec succès.", "Succès",
-                                    MessageBoxButton.OK, MessageBoxImage.Information);
-                    ChargerCommandes();
+                    bool ok = _dbManager.MettreAJourStatutCommande(id, "Approuvée");
+                    if (ok)
+                    {
+                        MessageBox.Show("Commande approuvée avec succès.", "Succès",
+                                        MessageBoxButton.OK, MessageBoxImage.Information);
+                        ChargerCommandes();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Erreur lors de l'approbation : {ex.Message}", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
@@ -133,12 +167,19 @@ namespace FMprojet.Views
 
                 if (confirm == MessageBoxResult.Yes)
                 {
-                    bool ok = _dbManager.MettreAJourStatutCommande(id, "Refusée");
-                    if (ok)
+                    try
                     {
-                        MessageBox.Show("Commande refusée.", "Information",
-                                        MessageBoxButton.OK, MessageBoxImage.Information);
-                        ChargerCommandes();
+                        bool ok = _dbManager.MettreAJourStatutCommande(id, "Refusée");
+                        if (ok)
+                        {
+                            MessageBox.Show("Commande refusée.", "Information",
+                                            MessageBoxButton.OK, MessageBoxImage.Information);
+                            ChargerCommandes();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Erreur lors du refus : {ex.Message}", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                 }
             }

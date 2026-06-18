@@ -1,6 +1,11 @@
 using FMprojet.Database;
 using FMprojet.Models;
 using FMprojet;
+using LiveChartsCore;
+using LiveChartsCore.SkiaSharpView;
+using LiveChartsCore.SkiaSharpView.Painting;
+using SkiaSharp;
+using System.Linq;
 using System.Windows;
 
 namespace FMprojet.Views
@@ -88,18 +93,111 @@ namespace FMprojet.Views
 
         private void ChargerCompteursDashboard()
         {
-            int nbVehicules = _dbManager.CompterVehiculesDisponibles();
-            int nbAttente   = _dbManager.CompterCommandesEnAttente();
+            int nbVehicules = 0;
+            int nbAttente = 0;
+
+            try
+            {
+                nbVehicules = _dbManager.CompterVehiculesDisponibles();
+                nbAttente   = _dbManager.CompterCommandesEnAttente();
+            }
+            catch (System.Exception ex)
+            {
+                MessageBox.Show($"Erreur lors du chargement du dashboard : {ex.Message}", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
 
             txtNbVehicules.Text           = nbVehicules.ToString();
             txtNbCommandesEnAttente.Text  = nbAttente.ToString();
+
+            ChargerGraphiqueCouts();
+            ChargerGraphiqueCategories();
+        }
+
+        private void ChargerGraphiqueCouts()
+        {
+            if (chartCouts == null) return;
+
+            try
+            {
+                var points = _dbManager.ObtenirCoutsParJourDerniersJours(30);
+                if (txtDashChartInfo != null)
+                    txtDashChartInfo.Text = points.Count == 0 ? "Aucune donnée de coût (ajoute des événements avec un coût dans le suivi véhicule)." : "";
+
+                var labels = points.Select(p => p.Jour.ToString("dd/MM")).ToArray();
+                var valeurs = points.Select(p => (double)p.CoutTotal).ToArray();
+
+                chartCouts.Series = new ISeries[]
+                {
+                    new ColumnSeries<double>
+                    {
+                        Values = valeurs,
+                        Name = "Coûts"
+                    }
+                };
+
+                chartCouts.XAxes = new Axis[]
+                {
+                    new Axis
+                    {
+                        Labels = labels,
+                        LabelsRotation = 0,
+                        TextSize = 11,
+                        SeparatorsPaint = new SolidColorPaint(new SKColor(230, 235, 240))
+                    }
+                };
+
+                chartCouts.YAxes = new Axis[]
+                {
+                    new Axis
+                    {
+                        Labeler = value => value.ToString("0"),
+                        TextSize = 11,
+                        SeparatorsPaint = new SolidColorPaint(new SKColor(230, 235, 240))
+                    }
+                };
+            }
+            catch (System.Exception ex)
+            {
+                if (txtDashChartInfo != null) txtDashChartInfo.Text = "Erreur lors du chargement du graphique.";
+                MessageBox.Show($"Erreur graphique : {ex.Message}", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void ChargerGraphiqueCategories()
+        {
+            if (chartCategories == null) return;
+
+            try
+            {
+                var cats = _dbManager.ObtenirDepensesFlotteParCategorie(30);
+                if (txtDashCatInfo != null)
+                    txtDashCatInfo.Text = cats.All(c => c.Total <= 0) ? "Aucune dépense saisie sur 30 jours (via le suivi journalier véhicule)." : "";
+
+                chartCategories.Series = cats
+                    .Where(c => c.Total > 0)
+                    .Select(c => new PieSeries<decimal>
+                    {
+                        Values = new[] { c.Total },
+                        Name = c.Categorie,
+                        DataLabelsSize = 12,
+                        DataLabelsPaint = new SolidColorPaint(SKColors.White),
+                        DataLabelsPosition = LiveChartsCore.Measure.PolarLabelsPosition.Middle
+                    })
+                    .Cast<ISeries>()
+                    .ToArray();
+            }
+            catch (System.Exception ex)
+            {
+                if (txtDashCatInfo != null) txtDashCatInfo.Text = "Erreur lors du chargement des catégories.";
+                MessageBox.Show($"Erreur graphique catégories : {ex.Message}", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void BtnDeconnexion_Click(object sender, RoutedEventArgs e)
         {
             var result = MessageBox.Show(
-                "Êtes-vous sûr de vouloir vous déconnecter ?",
-                "Déconnexion",
+                "Changer de compte et revenir à l'écran de connexion ?",
+                "Changer de compte",
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Question);
 
@@ -182,13 +280,6 @@ namespace FMprojet.Views
         {
             var vehicules = new Vehicules();
             vehicules.Show();
-            this.Close();
-        }
-
-        private void BtnMesCommandes_Click(object sender, RoutedEventArgs e)
-        {
-            var mesCommandes = new MesCommandes();
-            mesCommandes.Show();
             this.Close();
         }
     }

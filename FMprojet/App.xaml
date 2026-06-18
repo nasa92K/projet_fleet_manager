@@ -3,6 +3,81 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              StartupUri="Connexion.xaml">
     <Application.Resources>
+        <!-- Palette -->
+        <Color x:Key="Color.Navy">#1A2332</Color>
+        <Color x:Key="Color.Anthracite">#2C3E50</Color>
+        <Color x:Key="Color.Bg">#F0F2F5</Color>
+        <Color x:Key="Color.Border">#DDE3EA</Color>
+        <Color x:Key="Color.TextMuted">#7F8C8D</Color>
+        <Color x:Key="Color.Primary">#3498DB</Color>
+        <Color x:Key="Color.Danger">#E74C3C</Color>
+        <Color x:Key="Color.Success">#2ECC71</Color>
+
+        <SolidColorBrush x:Key="Brush.Navy" Color="{StaticResource Color.Navy}"/>
+        <SolidColorBrush x:Key="Brush.Anthracite" Color="{StaticResource Color.Anthracite}"/>
+        <SolidColorBrush x:Key="Brush.Bg" Color="{StaticResource Color.Bg}"/>
+        <SolidColorBrush x:Key="Brush.Border" Color="{StaticResource Color.Border}"/>
+        <SolidColorBrush x:Key="Brush.TextMuted" Color="{StaticResource Color.TextMuted}"/>
+        <SolidColorBrush x:Key="Brush.Primary" Color="{StaticResource Color.Primary}"/>
+        <SolidColorBrush x:Key="Brush.Danger" Color="{StaticResource Color.Danger}"/>
+        <SolidColorBrush x:Key="Brush.Success" Color="{StaticResource Color.Success}"/>
+
+        <!-- Styles globaux -->
+        <Style TargetType="{x:Type Window}">
+            <Setter Property="Background" Value="{StaticResource Brush.Bg}"/>
+            <Setter Property="FontFamily" Value="Segoe UI"/>
+        </Style>
+
+        <Style TargetType="{x:Type TextBox}">
+            <Setter Property="Padding" Value="10,7"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Brush.Border}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Background" Value="White"/>
+        </Style>
+
+        <Style TargetType="{x:Type PasswordBox}">
+            <Setter Property="Padding" Value="10,7"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Brush.Border}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Background" Value="White"/>
+        </Style>
+
+        <Style x:Key="PrimaryButton" TargetType="{x:Type Button}">
+            <Setter Property="Background" Value="{StaticResource Brush.Primary}"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Padding" Value="14,10"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="10" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Opacity" Value="0.9"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Opacity" Value="0.8"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.55"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="SecondaryButton" TargetType="{x:Type Button}" BasedOn="{StaticResource PrimaryButton}">
+            <Setter Property="Background" Value="#95A5A6"/>
+        </Style>
+
+        <Style x:Key="DangerButton" TargetType="{x:Type Button}" BasedOn="{StaticResource PrimaryButton}">
+            <Setter Property="Background" Value="{StaticResource Brush.Danger}"/>
+        </Style>
     </Application.Resources>
 </Application>
 

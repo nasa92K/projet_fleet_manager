@@ -1,6 +1,7 @@
 <Window x:Class="FMprojet.Views.Accueil"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
         Title="Accueil - Fleet Manager"
         Height="600" 
         Width="900"
@@ -84,9 +85,9 @@
                               Margin="0,4,0,0"/>
                 </StackPanel>
 
-                <Button x:Name="btnDeconnexion" 
+                <Button x:Name="btnChangerCompte" 
                        Grid.Column="1" 
-                       Content="⏻  Déconnexion" 
+                       Content="🔄  Changer de compte" 
                        Padding="15,8" 
                        Background="#E74C3C" 
                        Foreground="White" 
@@ -207,6 +208,31 @@
                             </Border>
                         </Grid>
 
+                        <!-- Graphiques -->
+                        <Grid Margin="0,0,0,18">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="12"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Border Grid.Column="0" Background="White" CornerRadius="10" Padding="12">
+                                <StackPanel>
+                                    <TextBlock Text="Évolution des coûts (30 derniers jours)" FontWeight="SemiBold" Foreground="#1A2332"/>
+                                    <TextBlock x:Name="txtDashChartInfo" Text="" FontSize="11" Foreground="#95A5A6" Margin="0,2,0,8"/>
+                                    <lvc:CartesianChart x:Name="chartCouts" Height="220"/>
+                                </StackPanel>
+                            </Border>
+
+                            <Border Grid.Column="2" Background="White" CornerRadius="10" Padding="12">
+                                <StackPanel>
+                                    <TextBlock Text="Dépenses flotte par catégorie (30 jours)" FontWeight="SemiBold" Foreground="#1A2332"/>
+                                    <TextBlock x:Name="txtDashCatInfo" Text="" FontSize="11" Foreground="#95A5A6" Margin="0,2,0,8"/>
+                                    <lvc:PieChart x:Name="chartCategories" Height="220"/>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+
                         <!-- Boutons de navigation admin -->
                         <Button Content="👥  Gérer les utilisateurs" 
                                 Style="{StaticResource NavButton}"
@@ -241,10 +267,6 @@
                                 Style="{StaticResource NavButton}"
                                 Background="#3498DB"
                                 Click="BtnVoirVehicules_Click"/>
-                        <Button Content="📋  Mes commandes" 
-                                Style="{StaticResource NavButton}"
-                                Background="#16A085"
-                                Click="BtnMesCommandes_Click"/>
                     </StackPanel>
                 </GroupBox>
 

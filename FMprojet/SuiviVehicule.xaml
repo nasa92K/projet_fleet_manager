@@ -1,0 +1,178 @@
+<Window x:Class="FMprojet.Views.SuiviVehicule"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Suivi du véhicule" Height="650" Width="980" MinHeight="600" MinWidth="900"
+        WindowStartupLocation="CenterOwner"
+        Background="#F0F2F5">
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- En-tête -->
+        <Border Grid.Row="0" Background="#1A2332" CornerRadius="10" Padding="16">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel>
+                    <TextBlock x:Name="txtTitreVehicule" Text="Suivi véhicule" FontSize="18" FontWeight="Bold" Foreground="White"/>
+                    <TextBlock x:Name="txtSousTitre" Text="" FontSize="12" Foreground="#8FA3B8" Margin="0,4,0,0"/>
+                </StackPanel>
+                <Button Grid.Column="1" Content="✕ Fermer" Click="BtnFermer_Click"
+                        Background="#E74C3C" Foreground="White" BorderThickness="0"
+                        Padding="12,6" Cursor="Hand"/>
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="1" Margin="0,14,0,14">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="360"/>
+                <ColumnDefinition Width="12"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Panneau édition snapshot -->
+            <Border Grid.Column="0" Background="White" CornerRadius="10" Padding="14">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Text="État actuel (snapshot)" FontSize="14" FontWeight="SemiBold" Foreground="#1A2332"/>
+
+                        <StackPanel Grid.Row="1" Margin="0,12,0,0">
+                            <TextBlock Text="Kilométrage" Foreground="#555"/>
+                            <TextBox x:Name="txtKm" Padding="10,7" BorderBrush="#DDE3EA" BorderThickness="1" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="2" Margin="0,10,0,0">
+                            <TextBlock Text="Carburant" Foreground="#555"/>
+                            <TextBox x:Name="txtCarb" Padding="10,7" BorderBrush="#DDE3EA" BorderThickness="1" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="3" Margin="0,10,0,0">
+                            <TextBlock Text="Notes (optionnel)" Foreground="#555"/>
+                            <TextBox x:Name="txtNotesSnapshot" Padding="10,7" BorderBrush="#DDE3EA" BorderThickness="1" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="4" Margin="0,12,0,0">
+                            <Button x:Name="btnEnregistrerSnapshot" Content="Enregistrer les changements" Click="BtnEnregistrerSnapshot_Click"
+                                    Background="#2ECC71" Foreground="White" BorderThickness="0"
+                                    Padding="12,8" Cursor="Hand"/>
+
+                            <Separator Margin="0,14,0,14"/>
+
+                            <TextBlock Text="Ajouter un événement" FontSize="14" FontWeight="SemiBold" Foreground="#1A2332"/>
+
+                            <StackPanel Margin="0,10,0,0">
+                                <TextBlock Text="Type" Foreground="#555"/>
+                                <ComboBox x:Name="cbType" SelectedIndex="0" Padding="8,4">
+                                    <ComboBoxItem Content="entretien"/>
+                                    <ComboBoxItem Content="peage"/>
+                                    <ComboBoxItem Content="consommation"/>
+                                </ComboBox>
+                            </StackPanel>
+
+                            <StackPanel Margin="0,10,0,0">
+                                <TextBlock Text="Valeur (optionnel)" Foreground="#555"/>
+                                <TextBox x:Name="txtValeurNum" Padding="10,7" BorderBrush="#DDE3EA" BorderThickness="1" />
+                            </StackPanel>
+
+                            <StackPanel Margin="0,10,0,0">
+                                <TextBlock Text="Coût (optionnel)" Foreground="#555"/>
+                                <TextBox x:Name="txtCout" Padding="10,7" BorderBrush="#DDE3EA" BorderThickness="1" />
+                            </StackPanel>
+
+                            <StackPanel Margin="0,10,0,0">
+                                <TextBlock Text="Date" Foreground="#555"/>
+                                <DatePicker x:Name="dpDateEvent" />
+                            </StackPanel>
+
+                            <StackPanel Margin="0,10,0,0">
+                                <TextBlock Text="Notes" Foreground="#555"/>
+                                <TextBox x:Name="txtNotesEvent" Padding="10,7" BorderBrush="#DDE3EA" BorderThickness="1" />
+                            </StackPanel>
+
+                            <Button Content="Ajouter à l'historique" Click="BtnAjouterEvent_Click"
+                                    Background="#3498DB" Foreground="White" BorderThickness="0"
+                                    Padding="12,8" Cursor="Hand" Margin="0,12,0,0"/>
+                        </StackPanel>
+                    </Grid>
+                </ScrollViewer>
+            </Border>
+
+            <!-- Historique -->
+            <Border Grid.Column="2" Background="White" CornerRadius="10" Padding="14">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Text="Journal des changements" FontSize="14" FontWeight="SemiBold" Foreground="#1A2332"/>
+
+                    <Grid Grid.Row="1" Margin="0,10,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="160"/>
+                            <ColumnDefinition Width="12"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="160"/>
+                            <ColumnDefinition Width="12"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Type:" VerticalAlignment="Center" Foreground="#555"/>
+                        <ComboBox x:Name="cbFiltreType" Grid.Column="1" Padding="8,4" SelectionChanged="Filtres_Changed">
+                            <ComboBoxItem Content="(tous)" IsSelected="True"/>
+                            <ComboBoxItem Content="kilometrage"/>
+                            <ComboBoxItem Content="carburant"/>
+                            <ComboBoxItem Content="entretien"/>
+                            <ComboBoxItem Content="peage"/>
+                            <ComboBoxItem Content="consommation"/>
+                        </ComboBox>
+                        <TextBlock Grid.Column="3" Text="Depuis:" VerticalAlignment="Center" Foreground="#555"/>
+                        <DatePicker x:Name="dpDepuis" Grid.Column="4" SelectedDateChanged="Filtres_Changed"/>
+                        <Button Grid.Column="6" Content="Réinitialiser" Click="BtnResetFiltres_Click" Padding="10,6" />
+                        <TextBlock Grid.Column="7" x:Name="txtCompteur" VerticalAlignment="Center" Foreground="#7F8C8D" Margin="10,0,0,0"/>
+                    </Grid>
+
+                    <ListView Grid.Row="2" x:Name="listHistorique" BorderThickness="0">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="Date" Width="140">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding DateEvent, StringFormat=dd/MM/yyyy}" />
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="Type" Width="120" DisplayMemberBinding="{Binding Type}"/>
+                                <GridViewColumn Header="Valeur" Width="120" DisplayMemberBinding="{Binding ValeurNum}"/>
+                                <GridViewColumn Header="Texte" Width="160" DisplayMemberBinding="{Binding ValeurTexte}"/>
+                                <GridViewColumn Header="Coût" Width="100" DisplayMemberBinding="{Binding Cout}"/>
+                                <GridViewColumn Header="Notes" Width="260" DisplayMemberBinding="{Binding Notes}"/>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <!-- Barre statut -->
+        <Border Grid.Row="2" Background="#E8ECF0" CornerRadius="10" Padding="12">
+            <TextBlock x:Name="txtStatut" Text="" Foreground="#7F8C8D"/>
+        </Border>
+    </Grid>
+</Window>
+

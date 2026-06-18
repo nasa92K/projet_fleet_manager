@@ -76,7 +76,7 @@
                     <TextBlock x:Name="txtCompteurCommandes" Text="Chargement…" FontSize="12" Foreground="#8FA3B8" Margin="0,3,0,0"/>
                 </StackPanel>
                 <Button Grid.Column="1" Content="← Retour" Click="BtnRetour_Click"
-                        Background="#E74C3C" Style="{StaticResource {x:Static FrameworkElement.StyleProperty}}"
+                        Background="#E74C3C" Style="{x:Null}"
                         Foreground="White" Padding="12,7" BorderThickness="0" Cursor="Hand">
                     <Button.Template>
                         <ControlTemplate TargetType="Button">
