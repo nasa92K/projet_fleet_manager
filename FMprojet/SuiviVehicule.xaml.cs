@@ -16,9 +16,27 @@ namespace FMprojet.Views
 
         public SuiviVehicule(Vehicule vehicule)
         {
+            // Assigner avant InitializeComponent : les ComboBox/DatePicker
+            // déclenchent SelectionChanged/SelectedDateChanged à l'init et appellent
+            // ChargerHistorique() qui utilise _vehicule.Id.
+            _vehicule = vehicule ?? throw new ArgumentNullException(nameof(vehicule));
             InitializeComponent();
-            _vehicule = vehicule;
-            Loaded += (_, _) => Initialiser();
+            Loaded += (_, _) =>
+            {
+                try
+                {
+                    Initialiser();
+                }
+                catch (Exception ex)
+                {
+                    txtStatut.Text = "Impossible d'initialiser le suivi.";
+                    MessageBox.Show(
+                        $"Erreur lors de l'ouverture du suivi :\n\n{ex.Message}",
+                        "Erreur",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Error);
+                }
+            };
         }
 
         private void Initialiser()
@@ -35,6 +53,8 @@ namespace FMprojet.Views
 
         private void ChargerHistorique()
         {
+            if (_vehicule == null) return;
+
             try
             {
                 var type = LireFiltreType();
@@ -181,8 +201,17 @@ namespace FMprojet.Views
 
         private void BtnFermer_Click(object sender, RoutedEventArgs e)
         {
-            DialogResult = ADesChangements;
-            Close();
+            try
+            {
+                if (ADesChangements)
+                    DialogResult = true;
+                else
+                    Close();
+            }
+            catch
+            {
+                Close();
+            }
         }
     }
 }

@@ -60,7 +60,7 @@ namespace FMprojet.Views
                 resultats = resultats.Where(c =>
                     (c.UtilisateurNom?.Contains(recherche, StringComparison.OrdinalIgnoreCase) ?? false) ||
                     (c.VehiculeMarqueModele?.Contains(recherche, StringComparison.OrdinalIgnoreCase) ?? false) ||
-                    (c.Statut?.Contains(recherche, StringComparison.OrdinalIgnoreCase) ?? false));
+                    c.StatutLibelle.Contains(recherche, StringComparison.OrdinalIgnoreCase));
             }
 
             // Filtre date
@@ -100,9 +100,9 @@ namespace FMprojet.Views
                 txtStatutBarre.Text = vide
                     ? "Aucune commande ne correspond aux critères de recherche."
                     : $"{affiches} commande(s) affichée(s) sur {total} au total  •  " +
-                      $"En attente : {_toutesLesCommandes.Count(c => c.Statut == "En attente")}  " +
-                      $"Approuvées : {_toutesLesCommandes.Count(c => c.Statut == "Approuvée")}  " +
-                      $"Refusées : {_toutesLesCommandes.Count(c => c.Statut == "Refusée")}";
+                      $"En attente : {_toutesLesCommandes.Count(c => c.Statut == StatutCommande.EnAttente)}  " +
+                      $"Confirmées : {_toutesLesCommandes.Count(c => c.Statut == StatutCommande.Confirmee)}  " +
+                      $"Annulées : {_toutesLesCommandes.Count(c => c.Statut == StatutCommande.Annulee)}";
             }
 
             if (txtCompteurCommandes != null)
@@ -142,7 +142,7 @@ namespace FMprojet.Views
             {
                 try
                 {
-                    bool ok = _dbManager.MettreAJourStatutCommande(id, "Approuvée");
+                    bool ok = _dbManager.MettreAJourStatutCommande(id, StatutCommande.Confirmee);
                     if (ok)
                     {
                         MessageBox.Show("Commande approuvée avec succès.", "Succès",
@@ -169,7 +169,7 @@ namespace FMprojet.Views
                 {
                     try
                     {
-                        bool ok = _dbManager.MettreAJourStatutCommande(id, "Refusée");
+                        bool ok = _dbManager.MettreAJourStatutCommande(id, StatutCommande.Annulee);
                         if (ok)
                         {
                             MessageBox.Show("Commande refusée.", "Information",

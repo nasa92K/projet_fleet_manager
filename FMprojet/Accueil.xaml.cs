@@ -310,6 +310,19 @@ namespace FMprojet.Views
             this.Close();
         }
 
+        private void BtnVehiculesARemplacer_Click(object sender, RoutedEventArgs e)
+        {
+            if (!SessionManager.EstAdmin)
+            {
+                MessageBox.Show("Accès refusé. Réservé aux administrateurs.", "Accès refusé",
+                                MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+            var page = new AdminVehiculesRemplacer();
+            page.Show();
+            this.Close();
+        }
+
         // ─── Utilisateur ──────────────────────────────────────────────
         private void BtnVoirVehicules_Click(object sender, RoutedEventArgs e)
         {

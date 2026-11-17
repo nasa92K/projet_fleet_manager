@@ -196,6 +196,7 @@
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
 
                                 <!-- Ligne 1 -->
@@ -240,6 +241,21 @@
                                     <TextBox x:Name="txtCategorieId" Style="{StaticResource DarkInput}" Text="1"/>
                                 </StackPanel>
 
+                                <!-- Ligne 4 : Date de mise en circulation — champ clé pour règle de remplacement -->
+                                <StackPanel Grid.Row="3" Grid.Column="0" Margin="0,8,0,0">
+                                    <TextBlock Text="DATE DE CIRCULATION" Style="{StaticResource FieldLabel}"
+                                               Foreground="#F4A535"/>
+                                    <DatePicker x:Name="dpCirculation"
+                                                Background="#0F1623"
+                                                Foreground="#EDF1FA"
+                                                ToolTip="Date de mise en service du véhicule (utilisée pour calculer l'âge réel)"/>
+                                </StackPanel>
+                                <StackPanel Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="3" Margin="0,8,0,0"
+                                            VerticalAlignment="Center">
+                                    <TextBlock FontSize="10" Foreground="#6B7FA8" TextWrapping="Wrap"
+                                               Text="⚠️  Un véhicule dont la date de circulation dépasse 4 ans ET dont le kilométrage est ≥ 80 000 km sera classé '🚨 À REMPLACER'."/>
+                                </StackPanel>
+
                                 <!-- Hidden champs -->
                                 <TextBox x:Name="txtImage" Visibility="Collapsed"/>
                                 <TextBox x:Name="txtDescription" Visibility="Collapsed"/>
@@ -255,6 +271,14 @@
                                     Style="{StaticResource DarkActionBtn}"
                                     Background="#3D8EF0"
                                     Margin="0,0,10,0"/>
+                            <!-- Bouton Modifier & Enregistrer :
+                                 Actif après pré-remplissage via "Modifier / Suivi".
+                                 Appelle ModifierVehicule() → UPDATE SQL -->
+                            <Button Content="💾  Modifier &amp; Enregistrer"
+                                    Click="BtnModifierEnregistrer_Click"
+                                    Style="{StaticResource DarkActionBtn}"
+                                    Background="#F4A535"
+                                    Margin="0,0,10,0"/>
                             <Button Content="✏  Modifier / Suivi"
                                     Click="BtnModifierVehicule_Click"
                                     Style="{StaticResource DarkActionBtn}"
@@ -265,6 +289,7 @@
                                     Style="{StaticResource DarkActionBtn}"
                                     Background="#E05C5C"/>
                         </StackPanel>
+
                     </Border>
                 </Grid>
             </Border>

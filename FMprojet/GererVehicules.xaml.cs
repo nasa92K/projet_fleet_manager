@@ -1,5 +1,6 @@
 using FMprojet.Database;
 using FMprojet.Models;
+using FMprojet;
 using System;
 using System.Globalization;
 using System.Linq;
@@ -257,29 +258,215 @@ namespace FMprojet.Views
                 Transmission    = txtTransmission.Text.Trim(),
                 Description     = txtDescription.Text.Trim(),
                 Image           = txtImage.Text.Trim(),
-                CategorieId     = categorieId
+                CategorieId     = categorieId,
+                // Date de mise en circulation (optionnelle)
+                Circulation     = dpCirculation.SelectedDate
             };
             return true;
         }
 
-        // ─── Modifier / Suivi ───────────────────────────────────────
         private void BtnModifierVehicule_Click(object sender, RoutedEventArgs e)
         {
-            if (listVehicules.SelectedItem is not Vehicule v)
+            if (listVehicules.SelectedItem is not Vehicule vehiculeSelectionne)
             {
-                MessageBox.Show("Veuillez sélectionner un véhicule à modifier.");
+                MessageBox.Show(
+                    "⚠️  Aucun véhicule sélectionné.\n\n" +
+                    "Veuillez cliquer sur un véhicule dans la liste avant d'utiliser\n" +
+                    "le bouton « Modifier / Suivi ».",
+                    "Sélection requise",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+                return;
+            }
+
+            _vehiculeSelectionne = vehiculeSelectionne;
+
+            try
+            {
+                expanderAjout.IsExpanded = true;
+                txtMarque.Text = vehiculeSelectionne.Marque ?? "";
+                txtModele.Text = vehiculeSelectionne.Modele ?? "";
+                txtImmatriculation.Text = vehiculeSelectionne.Immatriculation ?? "";
+                txtAnnee.Text = vehiculeSelectionne.Annee.ToString();
+                txtPrix.Text = vehiculeSelectionne.Prix.ToString(CultureInfo.InvariantCulture);
+                txtKilometrage.Text = vehiculeSelectionne.Kilometrage.ToString();
+                txtCarburant.Text = vehiculeSelectionne.Carburant ?? "";
+                txtTransmission.Text = vehiculeSelectionne.Transmission ?? "";
+                txtDescription.Text = vehiculeSelectionne.Description ?? string.Empty;
+                txtImage.Text = vehiculeSelectionne.Image ?? string.Empty;
+                txtCategorieId.Text = vehiculeSelectionne.CategorieId.ToString();
+                dpCirculation.SelectedDate = vehiculeSelectionne.Circulation;
+
+                txtVehiculeSelection.Text =
+                    $"{vehiculeSelectionne.Marque} {vehiculeSelectionne.Modele}  •  {vehiculeSelectionne.Immatriculation}  •  {vehiculeSelectionne.Annee}".Trim();
+
+                txtVehiculesFooter.Text =
+                    $"✏️  Champs pré-remplis pour : {vehiculeSelectionne.Marque} {vehiculeSelectionne.Modele} — " +
+                    "modifiez puis cliquez sur « Modifier & Enregistrer ».";
+            }
+            catch (Exception exPreremplissage)
+            {
+                MessageBox.Show(
+                    $"Erreur lors du pré-remplissage : {exPreremplissage.Message}",
+                    "Erreur",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+                return;
+            }
+
+            OuvrirFenetreSuivi(vehiculeSelectionne);
+        }
+
+        private void OuvrirFenetreSuivi(Vehicule vehicule)
+        {
+            try
+            {
+                var fenetreSuivi = new SuiviVehicule(vehicule)
+                {
+                    Owner = this
+                };
+
+                var resultat = fenetreSuivi.ShowDialog();
+
+                if (resultat == true)
+                {
+                    ChargerVehicules();
+                    txtVehiculesFooter.Text =
+                        $"✅  Suivi mis à jour pour : {vehicule.Marque} {vehicule.Modele}.";
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"Impossible d'ouvrir la fenêtre de suivi.\n\nDétail : {ex.Message}",
+                    "Erreur",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
+        }
+
+        /// <summary>
+        /// Enregistre les modifications saisies dans l'expander pour le véhicule
+        /// actuellement sélectionné, en appelant _dbManager.ModifierVehicule().
+        ///
+        /// Ce bouton remplace l'ancien comportement "Ajouter" quand un véhicule
+        /// est pré-sélectionné et que l'expander est pré-rempli.
+        /// </summary>
+        private void BtnModifierEnregistrer_Click(object sender, RoutedEventArgs e)
+        {
+            // ── Garde : un véhicule doit être sélectionné ────────────────────
+            if (_vehiculeSelectionne == null)
+            {
+                MessageBox.Show(
+                    "⚠️  Aucun véhicule sélectionné.\n\n" +
+                    "Sélectionnez un véhicule dans la liste, puis cliquez sur\n" +
+                    "« Modifier / Suivi » pour pré-remplir les champs avant d'enregistrer.",
+                    "Sélection requise",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
                 return;
             }
 
             try
             {
-                var suivi = new SuiviVehicule(v) { Owner = this };
-                if (suivi.ShowDialog() == true) ChargerVehicules();
+                // ── Validation et parsing des champs numériques ──────────────
+                if (string.IsNullOrWhiteSpace(txtMarque.Text) || string.IsNullOrWhiteSpace(txtModele.Text))
+                {
+                    MessageBox.Show("La marque et le modèle sont obligatoires.", "Validation",
+                        MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                if (!int.TryParse(txtAnnee.Text, out var annee))
+                {
+                    MessageBox.Show("L'année saisie est invalide. Veuillez entrer un nombre entier (ex : 2021).",
+                        "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                if (!decimal.TryParse(txtPrix.Text,
+                        System.Globalization.NumberStyles.Number,
+                        System.Globalization.CultureInfo.InvariantCulture, out var prix) &&
+                    !decimal.TryParse(txtPrix.Text, out prix))
+                {
+                    MessageBox.Show("Le prix saisi est invalide. Utilisez un point ou une virgule comme séparateur décimal.",
+                        "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                if (!int.TryParse(txtKilometrage.Text, out var kilometrage))
+                {
+                    MessageBox.Show("Le kilométrage saisi est invalide. Veuillez entrer un nombre entier (ex : 45000).",
+                        "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                var categorieId = 1;
+                if (!string.IsNullOrWhiteSpace(txtCategorieId.Text) &&
+                    !int.TryParse(txtCategorieId.Text, out categorieId))
+                {
+                    MessageBox.Show("L'identifiant de catégorie est invalide.",
+                        "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                // ── Confirmation avant modification ──────────────────────────
+                var confirmation = MessageBox.Show(
+                    $"Confirmer la modification du véhicule ?\n\n" +
+                    $"  Véhicule   : {_vehiculeSelectionne.Marque} {_vehiculeSelectionne.Modele}\n" +
+                    $"  Ancien km  : {_vehiculeSelectionne.Kilometrage:N0} km\n" +
+                    $"  Nouveau km : {kilometrage:N0} km\n" +
+                    $"  Ancienne année : {_vehiculeSelectionne.Annee}\n" +
+                    $"  Nouvelle année : {annee}",
+                    "Confirmer la modification",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Question);
+
+                if (confirmation != MessageBoxResult.Yes) return;
+
+                // ── Mise à jour de l'objet avec les nouvelles valeurs ────────
+                // On conserve l'Id pour que le WHERE id = @id soit correct
+                _vehiculeSelectionne.Marque          = txtMarque.Text.Trim();
+                _vehiculeSelectionne.Modele          = txtModele.Text.Trim();
+                _vehiculeSelectionne.Immatriculation = txtImmatriculation.Text.Trim();
+                _vehiculeSelectionne.Annee           = annee;
+                _vehiculeSelectionne.Prix            = prix;
+                _vehiculeSelectionne.Kilometrage     = kilometrage;
+                _vehiculeSelectionne.Carburant       = txtCarburant.Text.Trim();
+                _vehiculeSelectionne.Transmission    = txtTransmission.Text.Trim();
+                _vehiculeSelectionne.Description     = string.IsNullOrWhiteSpace(txtDescription.Text)
+                                                         ? null : txtDescription.Text.Trim();
+                _vehiculeSelectionne.Image           = string.IsNullOrWhiteSpace(txtImage.Text)
+                                                         ? null : txtImage.Text.Trim();
+                _vehiculeSelectionne.CategorieId     = categorieId;
+                // Mise à jour de la date de circulation
+                _vehiculeSelectionne.Circulation     = dpCirculation.SelectedDate;
+
+                // ── Appel à la nouvelle méthode ModifierVehicule() ───────────
+                bool succes = _dbManager.ModifierVehicule(_vehiculeSelectionne);
+
+                if (succes)
+                {
+                    txtVehiculesFooter.Text =
+                        $"✅  Véhicule {_vehiculeSelectionne.Marque} {_vehiculeSelectionne.Modele} modifié avec succès.";
+                    ChargerVehicules();         // Rafraîchit la liste
+                    ReinitialiserChamps();      // Vide les champs de l'expander
+                    expanderAjout.IsExpanded = false;
+                }
+                else
+                {
+                    // DatabaseManager a déjà affiché un MessageBox d'erreur SQL
+                    txtVehiculesFooter.Text = "❌  La modification a échoué. Consultez le message d'erreur.";
+                }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Erreur lors de l'ouverture du suivi : {ex.Message}",
-                    "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+                // Filet de sécurité global — l'application ne crashe jamais
+                MessageBox.Show(
+                    $"Erreur inattendue lors de la modification :\n\n{ex.Message}",
+                    "Erreur critique",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
             }
         }
 
@@ -334,7 +521,8 @@ namespace FMprojet.Views
             txtAnnee.Clear();  txtPrix.Clear();   txtKilometrage.Clear();
             txtCarburant.Clear(); txtTransmission.Clear();
             txtDescription.Clear(); txtImage.Clear();
-            txtCategorieId.Text = "1";
+            txtCategorieId.Text       = "1";
+            dpCirculation.SelectedDate = null; // Vider la date de circulation
         }
     }
 }

@@ -221,6 +221,17 @@
                                     <TextBlock Text="  Commandes" VerticalAlignment="Center"/>
                                 </StackPanel>
                             </Button>
+                            <!-- Bouton Véhicules à remplacer (admin only) -->
+                            <Button x:Name="btnNavVehiculesRemplacer"
+                                    Style="{StaticResource SidebarBtn}"
+                                    Click="BtnVehiculesARemplacer_Click">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="🚨" FontSize="15" VerticalAlignment="Center"/>
+                                    <TextBlock Text="  Véhicules à remplacer"
+                                               VerticalAlignment="Center"
+                                               Foreground="#E05C5C"/>
+                                </StackPanel>
+                            </Button>
                             <Separator Style="{StaticResource SidebarSep}"/>
                         </StackPanel>
 

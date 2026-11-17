@@ -3,7 +3,7 @@
 
 CREATE TABLE IF NOT EXISTS historique_vehicule (
     id            INT AUTO_INCREMENT PRIMARY KEY,
-    vehicule_id   INT NOT NULL,
+    vehicule_id   INT UNSIGNED NOT NULL,
     type          VARCHAR(32) NOT NULL,
     valeur_texte  VARCHAR(255) NULL,
     valeur_num    DECIMAL(12,2) NULL,

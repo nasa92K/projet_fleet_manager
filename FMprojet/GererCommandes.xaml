@@ -11,21 +11,17 @@
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="Padding" Value="6,3"/>
             <Style.Triggers>
-                <DataTrigger Binding="{Binding Statut}" Value="Approuvée">
+                <DataTrigger Binding="{Binding Statut}" Value="confirmee">
                     <Setter Property="Foreground" Value="#1A8A4A"/>
                     <Setter Property="Background" Value="#D4F0E0"/>
                 </DataTrigger>
-                <DataTrigger Binding="{Binding Statut}" Value="Refusée">
+                <DataTrigger Binding="{Binding Statut}" Value="annulee">
                     <Setter Property="Foreground" Value="#C0392B"/>
                     <Setter Property="Background" Value="#FAD7D7"/>
                 </DataTrigger>
-                <DataTrigger Binding="{Binding Statut}" Value="En attente">
+                <DataTrigger Binding="{Binding Statut}" Value="en_attente">
                     <Setter Property="Foreground" Value="#D35400"/>
                     <Setter Property="Background" Value="#FDE8CB"/>
-                </DataTrigger>
-                <DataTrigger Binding="{Binding Statut}" Value="Terminée">
-                    <Setter Property="Foreground" Value="#2C3E50"/>
-                    <Setter Property="Background" Value="#E0E3E7"/>
                 </DataTrigger>
             </Style.Triggers>
         </Style>
@@ -222,7 +218,7 @@
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <Border CornerRadius="4" Padding="1">
-                                        <TextBlock Text="{Binding Statut}" Style="{StaticResource StatutText}"/>
+                                        <TextBlock Text="{Binding StatutLibelle}" Style="{StaticResource StatutText}"/>
                                     </Border>
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
@@ -242,7 +238,7 @@
                                                 <Style TargetType="Button" BasedOn="{StaticResource ActionBtn}">
                                                     <Setter Property="Visibility" Value="Collapsed"/>
                                                     <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding Statut}" Value="En attente">
+                                                        <DataTrigger Binding="{Binding Statut}" Value="en_attente">
                                                             <Setter Property="Visibility" Value="Visible"/>
                                                         </DataTrigger>
                                                     </Style.Triggers>
@@ -258,7 +254,7 @@
                                                 <Style TargetType="Button" BasedOn="{StaticResource ActionBtn}">
                                                     <Setter Property="Visibility" Value="Collapsed"/>
                                                     <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding Statut}" Value="En attente">
+                                                        <DataTrigger Binding="{Binding Statut}" Value="en_attente">
                                                             <Setter Property="Visibility" Value="Visible"/>
                                                         </DataTrigger>
                                                     </Style.Triggers>

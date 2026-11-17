@@ -482,3 +482,6 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+# Sauvegardes locales de la base (contiennent des données sensibles)
+db/backup_*.sql

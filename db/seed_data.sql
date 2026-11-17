@@ -44,61 +44,61 @@ INSERT INTO vehicules (marque, modele, immatriculation, annee, prix, kilometrage
 -- via sous-requêtes sur email / immatriculation
 
 INSERT INTO commandes (utilisateur_id, vehicule_id, statut, date_commande)
-SELECT u.id, v.id, 'En attente', DATE_SUB(NOW(), INTERVAL 1 DAY)
+SELECT u.id, v.id, 'en_attente', DATE_SUB(NOW(), INTERVAL 1 DAY)
 FROM utilisateurs u, vehicules v
 WHERE u.email = 'lucas.martin@fleetmanager.fr'
   AND v.immatriculation = 'AA-123-BB';
 
 INSERT INTO commandes (utilisateur_id, vehicule_id, statut, date_commande)
-SELECT u.id, v.id, 'En attente', DATE_SUB(NOW(), INTERVAL 2 DAY)
+SELECT u.id, v.id, 'en_attente', DATE_SUB(NOW(), INTERVAL 2 DAY)
 FROM utilisateurs u, vehicules v
 WHERE u.email = 'emma.bernard@fleetmanager.fr'
   AND v.immatriculation = 'BB-456-CC';
 
 INSERT INTO commandes (utilisateur_id, vehicule_id, statut, date_commande)
-SELECT u.id, v.id, 'En attente', DATE_SUB(NOW(), INTERVAL 3 DAY)
+SELECT u.id, v.id, 'en_attente', DATE_SUB(NOW(), INTERVAL 3 DAY)
 FROM utilisateurs u, vehicules v
 WHERE u.email = 'thomas.dupont@fleetmanager.fr'
   AND v.immatriculation = 'CC-789-DD';
 
 INSERT INTO commandes (utilisateur_id, vehicule_id, statut, date_commande)
-SELECT u.id, v.id, 'Validée', DATE_SUB(NOW(), INTERVAL 5 DAY)
+SELECT u.id, v.id, 'confirmee', DATE_SUB(NOW(), INTERVAL 5 DAY)
 FROM utilisateurs u, vehicules v
 WHERE u.email = 'chloe.leroy@fleetmanager.fr'
   AND v.immatriculation = 'DD-012-EE';
 
 INSERT INTO commandes (utilisateur_id, vehicule_id, statut, date_commande)
-SELECT u.id, v.id, 'Validée', DATE_SUB(NOW(), INTERVAL 7 DAY)
+SELECT u.id, v.id, 'confirmee', DATE_SUB(NOW(), INTERVAL 7 DAY)
 FROM utilisateurs u, vehicules v
 WHERE u.email = 'nicolas.moreau@fleetmanager.fr'
   AND v.immatriculation = 'EE-345-FF';
 
 INSERT INTO commandes (utilisateur_id, vehicule_id, statut, date_commande)
-SELECT u.id, v.id, 'En attente', DATE_SUB(NOW(), INTERVAL 1 DAY)
+SELECT u.id, v.id, 'en_attente', DATE_SUB(NOW(), INTERVAL 1 DAY)
 FROM utilisateurs u, vehicules v
 WHERE u.email = 'julie.simon@fleetmanager.fr'
   AND v.immatriculation = 'FF-678-GG';
 
 INSERT INTO commandes (utilisateur_id, vehicule_id, statut, date_commande)
-SELECT u.id, v.id, 'En attente', DATE_SUB(NOW(), INTERVAL 4 DAY)
+SELECT u.id, v.id, 'en_attente', DATE_SUB(NOW(), INTERVAL 4 DAY)
 FROM utilisateurs u, vehicules v
 WHERE u.email = 'sarah.michel@fleetmanager.fr'
   AND v.immatriculation = 'GG-901-HH';
 
 INSERT INTO commandes (utilisateur_id, vehicule_id, statut, date_commande)
-SELECT u.id, v.id, 'Refusée', DATE_SUB(NOW(), INTERVAL 10 DAY)
+SELECT u.id, v.id, 'annulee', DATE_SUB(NOW(), INTERVAL 10 DAY)
 FROM utilisateurs u, vehicules v
 WHERE u.email = 'antoine.garcia@fleetmanager.fr'
   AND v.immatriculation = 'HH-234-II';
 
 INSERT INTO commandes (utilisateur_id, vehicule_id, statut, date_commande)
-SELECT u.id, v.id, 'En attente', DATE_SUB(NOW(), INTERVAL 2 DAY)
+SELECT u.id, v.id, 'en_attente', DATE_SUB(NOW(), INTERVAL 2 DAY)
 FROM utilisateurs u, vehicules v
 WHERE u.email = 'camille.roux@fleetmanager.fr'
   AND v.immatriculation = 'II-567-JJ';
 
 INSERT INTO commandes (utilisateur_id, vehicule_id, statut, date_commande)
-SELECT u.id, v.id, 'Validée', DATE_SUB(NOW(), INTERVAL 6 DAY)
+SELECT u.id, v.id, 'confirmee', DATE_SUB(NOW(), INTERVAL 6 DAY)
 FROM utilisateurs u, vehicules v
 WHERE u.email = 'lucas.martin@fleetmanager.fr'
   AND v.immatriculation = 'JJ-890-KK';

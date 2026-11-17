@@ -3,7 +3,7 @@
 
 CREATE TABLE IF NOT EXISTS suivi_depenses (
     id                 INT AUTO_INCREMENT PRIMARY KEY,
-    vehicule_id        INT NOT NULL,
+    vehicule_id        INT UNSIGNED NOT NULL,
     date_jour          DATE NOT NULL,
 
     kilometrage        INT NULL,

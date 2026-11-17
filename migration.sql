@@ -1,4 +1,10 @@
 -- ============================================================
+-- ⚠️  OBSOLÈTE – NE PLUS EXÉCUTER
+-- Ce script utilise d'anciens statuts ('En attente', 'Approuvée'...)
+-- incompatibles avec le code actuel. Remplacé par :
+--   db/migrations/003_fk_cascade_innodb.sql
+--   db/migrations/004_statut_commandes.sql
+-- ============================================================
 -- FMprojet - Script de migration
 -- À exécuter UNE SEULE FOIS dans phpMyAdmin sur la base
 -- projet_fleet_manager
